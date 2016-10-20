@@ -1,5 +1,11 @@
 ﻿using System.Web;
 using System.Web.Optimization;
+using BundleTransformer.Core.Builders;
+using BundleTransformer.Core.Orderers;
+using BundleTransformer.Core.Resolvers;
+using BundleTransformer.Core.Transformers;
+using BundleTransformer.Less;
+using BundleTransformer.Core.Bundles;
 
 namespace WorkFlowBilling
 {
@@ -8,6 +14,11 @@ namespace WorkFlowBilling
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.UseCdn = true;
+            var nullBuilder = new NullBuilder();
+            var nullOrderer = new NullOrderer();
+            BundleResolver.Current = new CustomBundleResolver();
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery/jquery-{version}.js",
                         "~/Scripts/jquery/jquery.validate*"));
@@ -20,11 +31,15 @@ namespace WorkFlowBilling
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap/bootstrap.js",
                       "~/Scripts/bootstrap/respond.js"));
+            
+            // Less Bundle
+            var lessBundle = new CustomStyleBundle("~/Content/less");
+            lessBundle.Include("~/Content/Less/Site.less",
+                "~/Content/Less/bootstrap.less");
+            lessBundle.Orderer = nullOrderer;
+            bundles.Add(lessBundle);
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/Bootstrap/bootstrap-theme.css",
-                      "~/Content/Bootstrap/bootstrap.css",
-                      "~/Content/site.css"));
+            BundleTable.EnableOptimizations = false;
         }
     }
 }
