@@ -87,3 +87,6 @@ D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\JavaScriptEngineSwitcher.
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\JavaScriptEngineSwitcher.V8.xml
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\MsieJavaScriptEngine.xml
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\ru-ru\MsieJavaScriptEngine.resources.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\AjaxMin.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\BundleTransformer.MicrosoftAjax.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\ru-ru\BundleTransformer.MicrosoftAjax.resources.dll

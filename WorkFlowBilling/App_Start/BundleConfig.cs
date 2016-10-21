@@ -1,10 +1,6 @@
-﻿using System.Web;
-using System.Web.Optimization;
-using BundleTransformer.Core.Builders;
+﻿using System.Web.Optimization;
 using BundleTransformer.Core.Orderers;
 using BundleTransformer.Core.Resolvers;
-using BundleTransformer.Core.Transformers;
-using BundleTransformer.Less;
 using BundleTransformer.Core.Bundles;
 
 namespace WorkFlowBilling
@@ -15,9 +11,8 @@ namespace WorkFlowBilling
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.UseCdn = true;
-            var nullBuilder = new NullBuilder();
-            var nullOrderer = new NullOrderer();
             BundleResolver.Current = new CustomBundleResolver();
+            var nullOrderer = new NullOrderer();
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery/jquery-{version}.js",
@@ -33,13 +28,11 @@ namespace WorkFlowBilling
                       "~/Scripts/bootstrap/respond.js"));
             
             // Less Bundle
-            var lessBundle = new CustomStyleBundle("~/Content/less");
+            var lessBundle = new CustomStyleBundle("~/bundles/less");
             lessBundle.Include("~/Content/Less/Site.less",
                 "~/Content/Less/bootstrap.less");
             lessBundle.Orderer = nullOrderer;
-            bundles.Add(lessBundle);
-
-            BundleTable.EnableOptimizations = false;
+            bundles.Add(lessBundle); 
         }
     }
 }
