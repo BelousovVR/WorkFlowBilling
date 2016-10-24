@@ -1,0 +1,5 @@
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.Common\bin\Debug\WorkFlowBilling.Common.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.Common\bin\Debug\WorkFlowBilling.Common.pdb
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.Common\obj\Debug\WorkFlowBilling.Common.csprojResolveAssemblyReference.cache
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.Common\obj\Debug\WorkFlowBilling.Common.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.Common\obj\Debug\WorkFlowBilling.Common.pdb

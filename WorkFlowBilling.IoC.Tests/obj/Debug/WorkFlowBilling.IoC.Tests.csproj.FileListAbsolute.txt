@@ -1,0 +1,8 @@
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\bin\Debug\WorkFlowBilling.IoC.Tests.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\bin\Debug\WorkFlowBilling.IoC.Tests.pdb
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\bin\Debug\nunit.framework.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\bin\Debug\nunit.framework.xml
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\obj\Debug\WorkFlowBilling.IoC.Tests.csprojResolveAssemblyReference.cache
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\obj\Debug\WorkFlowBilling.IoC.Tests.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling.IoC.Tests\obj\Debug\WorkFlowBilling.IoC.Tests.pdb
