@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WorkFlowBilling.IoC</RootNamespace>
     <AssemblyName>WorkFlowBilling.IoC</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="Attributes\AutoInjectableAttribute.cs" />
     <Compile Include="Attributes\AutoInjectableInstanceAttribute.cs" />
+    <Compile Include="Container\ContainerManager.cs" />
+    <Compile Include="Container\IContainerManager.cs" />
     <Compile Include="Enumerations\InstanceLifeTime.cs" />
     <Compile Include="Extensions\ContainerBuilderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

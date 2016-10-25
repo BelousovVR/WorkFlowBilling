@@ -16,29 +16,26 @@ namespace WorkFlowBilling.IoC.Extensions
     /// </summary>
     public static class ContainerBuilderExtensions
     {
-        // TODO: тесты
         /// <summary>
-        /// 
+        /// Получить AutoInjectableAttribute для указанного типа
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="t">Тип</param>
         /// <returns></returns>
         public static AutoInjectableAttribute GetAutoInjectableAttribute(Type t)
         {
             return t.GetCustomAttribute<AutoInjectableAttribute>();
         }
 
-        // TODO: тесты
         /// <summary>
-        /// 
+        /// Получить AutoInjectableInstanceAttribute для указанного типа
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="t">Тип</param>
         /// <returns></returns>
         public static AutoInjectableInstanceAttribute GetAutoInjectableInstanceAttribute(Type t)
         {
             return t.GetCustomAttribute<AutoInjectableInstanceAttribute>();
         }
 
-        // TODO: тесты
         /// <summary>
         /// Проверить, реализует ли тип интерфейс, помеченный аттрибутом AutoInjectable
         /// </summary>
@@ -49,7 +46,6 @@ namespace WorkFlowBilling.IoC.Extensions
             return t.GetInterfaces().Any(_ =>  GetAutoInjectableAttribute(_) != null);
         }
 
-        // TODO: тесты (с моками и т.д.)
         /// <summary>
         /// Зарегистрировать типы из сборки
         /// </summary>
