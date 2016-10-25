@@ -49,9 +49,9 @@ namespace WorkFlowBilling.IoC.Extensions
         /// <summary>
         /// Зарегистрировать типы из сборки
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="assembly"></param>
-        public static void AddAssembliesTypes(this ContainerBuilder builder, Assembly assembly)
+        /// <param name="builder">Билдер</param>
+        /// <param name="assembly">Сборка</param>
+        public static void RegisterAssembliesTypes(this ContainerBuilder builder, Assembly assembly)
         {
             if (assembly == null)
             {

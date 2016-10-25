@@ -94,3 +94,11 @@ D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\Autofac.xml
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\obj\Debug\WorkFlowBilling.csprojResolveAssemblyReference.cache
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\Autofac.Integration.Mvc.dll
 D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\Autofac.Integration.Mvc.xml
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Compiler.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Compiler.Impl.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.IoC.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Common.dll
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Compiler.Impl.pdb
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Compiler.pdb
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.IoC.pdb
+D:\WorkflowBilling\WorkFlowBilling\WorkFlowBilling\bin\WorkFlowBilling.Common.pdb

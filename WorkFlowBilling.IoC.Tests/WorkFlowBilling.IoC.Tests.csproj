@@ -60,13 +60,13 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssemblyRef.cs" />
-    <Compile Include="ContainerManagerTests.cs" />
     <Compile Include="Extensions\ContainerBuilderExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stubs\ContainerBuilderClassesStubs.cs" />
     <Compile Include="Stubs\ContainerBuilderInterfacesStubs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

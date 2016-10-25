@@ -7,6 +7,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using JavaScriptEngineSwitcher.Core;
 using WorkFlowBilling.App_Start;
+using WorkFlowBilling.IoC.Container;
 
 namespace WorkFlowBilling
 {
@@ -14,6 +15,18 @@ namespace WorkFlowBilling
     {
         protected void Application_Start()
         {
+            // Создать containerManager
+            IContainerManager containerManager = new ContainerManager();
+
+            // Зарегистрировать контроллеры
+            containerManager.RegisterControllers(typeof(MvcApplication).Assembly);
+
+            // Зарегистрировать типы
+            containerManager.RegisterAssembliesTypes(typeof(Compiler.Impl.AssemblyRef).Assembly);
+
+            // Установка сопоставителя зависимостей
+            containerManager.SetAspNetMvcResolver();
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

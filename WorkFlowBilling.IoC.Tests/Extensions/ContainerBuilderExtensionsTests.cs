@@ -88,7 +88,7 @@ namespace WorkFlowBilling.IoC.Tests.Extensions
             var awaitedType = typeof(InjectableClass);
 
             //WHEN
-            builder.AddAssembliesTypes(assembly);
+            builder.RegisterAssembliesTypes(assembly);
             Type resolvedType;
             using (var container = builder.Build())
             {
