@@ -14,7 +14,7 @@ namespace WorkFlowBilling.IoC.Tests.Stubs
     public interface InterfaceWithoutAutoInjectableAttribute { }
 
     /// <summary>
-    /// Первый тестовый интерфейс
+    /// Тестовый интерфейс для класса, имеющего AutoInjectableInstanceAttribute
     /// </summary>
     [AutoInjectable]
     public interface InjectableInterface { }

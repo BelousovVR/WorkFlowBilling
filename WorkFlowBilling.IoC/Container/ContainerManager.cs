@@ -2,6 +2,7 @@
 using Autofac.Integration.Mvc;
 using System.Reflection;
 using System.Web.Mvc;
+using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Extensions;
 
 namespace WorkFlowBilling.IoC.Container
@@ -9,6 +10,7 @@ namespace WorkFlowBilling.IoC.Container
     /// <summary>
     /// Менеджер DI контейнера 
     /// </summary>
+    [AutoInjectableInstance]
     public class ContainerManager : IContainerManager
     {
         private ContainerBuilder Builder;

@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
+using WorkFlowBilling.IoC.Attributes;
 
 namespace WorkFlowBilling.IoC.Container
 {
     /// <summary>
     /// Менеджер DI контейнера 
     /// </summary>
+    [AutoInjectable] 
     public interface IContainerManager
     {
         /// <summary>

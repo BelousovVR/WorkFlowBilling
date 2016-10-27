@@ -1,8 +1,7 @@
 ﻿using Autofac;
 using NUnit.Framework;
 using System;
-using System.Linq;
-using System.Reflection;
+using WorkFlowBilling.IoC.Enumerations;
 using WorkFlowBilling.IoC.Extensions;
 using WorkFlowBilling.IoC.Tests.Stubs;
 
@@ -89,6 +88,26 @@ namespace WorkFlowBilling.IoC.Tests.Extensions
 
             //WHEN
             builder.RegisterAssembliesTypes(assembly);
+            Type resolvedType;
+            using (var container = builder.Build())
+            {
+                resolvedType = container.Resolve<InjectableInterface>().GetType();
+            }
+
+            //THEN
+            Assert.AreEqual(awaitedType, resolvedType);
+        }
+
+        [Test]
+        public void ContainerBuilderExtensions_RegisterTypeExtension_InjectableExists()
+        {
+            //GIVEN
+            var builder = new ContainerBuilder();
+            var awaitedType = typeof(InjectableClass);
+            var serviceType = typeof(InjectableInterface);
+
+            //WHEN
+            builder.RegisterType(awaitedType, new[] { serviceType }, InstanceLifeTime.SingleInstance);
             Type resolvedType;
             using (var container = builder.Build())
             {

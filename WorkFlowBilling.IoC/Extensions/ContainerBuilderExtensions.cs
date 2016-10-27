@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WorkFlowBilling.Common.Extensions;
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
@@ -47,6 +45,32 @@ namespace WorkFlowBilling.IoC.Extensions
         }
 
         /// <summary>
+        /// Зарегистрировать тип
+        /// </summary>
+        /// <param name="builder">Билдер</param>
+        /// <param name="type">Тип</param>
+        /// <param name="services">зарегистрировать как</param>
+        /// <param name="instanceLifeTime">Время жизни объекта</param>
+        public static void RegisterType(this ContainerBuilder builder, 
+                                        Type type, 
+                                        Type[] services,
+                                        InstanceLifeTime instanceLifeTime)
+        {
+            switch (instanceLifeTime)
+            {
+                case InstanceLifeTime.SingleInstance:
+                    builder.RegisterType(type).As(services).PropertiesAutowired().SingleInstance();
+                    break;
+                case InstanceLifeTime.InstancePerLifeTimeScope:
+                    builder.RegisterType(type).As(services).PropertiesAutowired().InstancePerLifetimeScope();
+                    break;
+                case InstanceLifeTime.InstancePerRequest:
+                    builder.RegisterType(type).As(services).PropertiesAutowired().InstancePerDependency();
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Зарегистрировать типы из сборки
         /// </summary>
         /// <param name="builder">Билдер</param>
@@ -73,21 +97,10 @@ namespace WorkFlowBilling.IoC.Extensions
                 });
 
             // зарегистрировать типы
-            injectInfo.ForEach(_ =>
-            {
-                switch (_.InstanceAttribute.InstanceLifeTime)
-                {
-                    case InstanceLifeTime.SingleInstance:
-                        builder.RegisterType(_.TypeValue).As(_.InjectableInterfaces).PropertiesAutowired().SingleInstance();
-                        break;
-                    case InstanceLifeTime.InstancePerLifeTimeScope:
-                        builder.RegisterType(_.TypeValue).As(_.InjectableInterfaces).PropertiesAutowired().InstancePerLifetimeScope();
-                        break;
-                    case InstanceLifeTime.InstancePerRequest:
-                        builder.RegisterType(_.TypeValue).As(_.InjectableInterfaces).PropertiesAutowired().InstancePerDependency();
-                        break;
-                }
-            });
+            injectInfo.ForEach(_ => builder.RegisterType(_.TypeValue, 
+                                                        _.InjectableInterfaces, 
+                                                        _.InstanceAttribute.InstanceLifeTime)
+            );
         }
     }
 }
