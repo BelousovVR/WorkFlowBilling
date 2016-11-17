@@ -14,7 +14,6 @@ namespace WorkFlowBilling.IoC.Tests.Extensions
     [TestFixture]
     public class ContainerManagerTests
     {
-
         private HttpContext CreateHttpContextStub()
         {
             var httpRequest = new HttpRequest("", "http://tempuri.org", "");
@@ -64,6 +63,22 @@ namespace WorkFlowBilling.IoC.Tests.Extensions
             
             //THEN
             Assert.AreEqual(awaitedType, resolvedType);
+        }
+
+        [Test]
+        public void ContainerManager_Inject_InjectCorrect()
+        {
+            //GIVEN
+            var containerManager = new ContainerManager();
+            containerManager.RegisterAssembliesTypes(typeof(AssemblyRef).Assembly);
+
+            var propertyInjectedClass = new PropertyInjectedClass();
+
+            //WHEN
+            containerManager.Inject(propertyInjectedClass);
+
+            //THEN
+            Assert.NotNull(propertyInjectedClass.InjectableInstance);
         }
     }
 }

@@ -29,4 +29,12 @@ namespace WorkFlowBilling.IoC.Tests.Stubs
     /// </summary>
     [AutoInjectableInstance]
     public class InjectableClass : InjectableInterface { }
+
+    /// <summary>
+    /// Класс, содержащий объект, реализующий InjectableInterface
+    /// </summary>
+    public class PropertyInjectedClass
+    {
+        public InjectableInterface InjectableInstance { get; set; }
+    }
 }

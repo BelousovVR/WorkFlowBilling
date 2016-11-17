@@ -26,5 +26,12 @@ namespace WorkFlowBilling.IoC.Container
         /// Установить DependencyResolver
         /// </summary>
         void SetAspNetMvcResolver();
+
+        /// <summary>
+        /// Подставить свойства объекта
+        /// </summary>
+        /// <typeparam name="T">Тип объекта</typeparam>
+        /// <param name="obj">Объект</param>
+        void Inject<T>(T obj) where T : class;
     }
 }

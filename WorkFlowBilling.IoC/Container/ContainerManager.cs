@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Web.Mvc;
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Extensions;
+using System;
 
 namespace WorkFlowBilling.IoC.Container
 {
@@ -14,6 +15,7 @@ namespace WorkFlowBilling.IoC.Container
     public class ContainerManager : IContainerManager
     {
         private ContainerBuilder Builder;
+        private IContainer Container;
 
         /// <summary>
         /// Зарегистрировать контроллеры
@@ -42,8 +44,23 @@ namespace WorkFlowBilling.IoC.Container
         /// </summary>
         public void SetAspNetMvcResolver()
         {
-            var contaner = Builder.Build();
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(contaner));
+            if (Container == null)
+                Container = Builder.Build();
+
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(Container));
+        }
+
+        /// <summary>
+        /// Подставить значения свойства
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        public void Inject<T>(T obj) where T : class
+        {
+            if (Container == null)
+                Container = Builder.Build();
+
+            Container.InjectProperties(obj);
         }
 
         public ContainerManager()
