@@ -31,7 +31,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Logger", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Logger.Impl", "WorkFlowBilling.Logger.Impl\WorkFlowBilling.Logger.Impl.csproj", "{85271377-7925-4D0D-9677-5BBD9844952D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Logger.FunctionalTests", "WorkFlowBilling.Logger.Tests\WorkFlowBilling.Logger.FunctionalTests.csproj", "{46B78B06-93F1-4125-89F0-3A8D0DCC13B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Logger.FunctionalTests", "WorkFlowBilling.Logger.FunctionalTests\WorkFlowBilling.Logger.FunctionalTests.csproj", "{46B78B06-93F1-4125-89F0-3A8D0DCC13B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.TestFramework", "WorkFlowBilling.TestFramework\WorkFlowBilling.TestFramework.csproj", "{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,10 @@ Global
 		{46B78B06-93F1-4125-89F0-3A8D0DCC13B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46B78B06-93F1-4125-89F0-3A8D0DCC13B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46B78B06-93F1-4125-89F0-3A8D0DCC13B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,5 +104,6 @@ Global
 		{06583183-6490-4C9A-A259-6EB8BA93ED88} = {D0412CCA-B653-42FE-BCF2-EC29836A5C75}
 		{85271377-7925-4D0D-9677-5BBD9844952D} = {D0412CCA-B653-42FE-BCF2-EC29836A5C75}
 		{46B78B06-93F1-4125-89F0-3A8D0DCC13B0} = {D0412CCA-B653-42FE-BCF2-EC29836A5C75}
+		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02} = {BDA2F661-C7DD-4CB4-9042-27552853CBC6}
 	EndGlobalSection
 EndGlobal
