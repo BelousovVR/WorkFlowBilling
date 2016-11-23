@@ -11,7 +11,6 @@ using ILogger = WorkFlowBilling.Logger.Services.ILogger;
 
 namespace WorkFlowBilling.Logger.Impl.Services
 {
-
     /// <summary>
     /// Класс для логгирования сообщений
     /// </summary>
