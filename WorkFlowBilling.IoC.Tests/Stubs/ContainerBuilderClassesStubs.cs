@@ -1,4 +1,6 @@
-﻿using WorkFlowBilling.IoC.Attributes;
+﻿using System;
+using System.Web.Mvc;
+using WorkFlowBilling.IoC.Attributes;
 
 namespace WorkFlowBilling.IoC.Tests.Stubs
 {
@@ -36,5 +38,18 @@ namespace WorkFlowBilling.IoC.Tests.Stubs
     public class PropertyInjectedClass
     {
         public InjectableInterface InjectableInstance { get; set; }
+    }
+
+    /// <summary>
+    /// Фильтр, содежащий объект, реализующий InjectableInterface
+    /// </summary>
+    public class GlobalFilter: FilterAttribute, IExceptionFilter
+    {
+        public InjectableInterface InjectableInstance { get; set; }
+
+        public void OnException(ExceptionContext filterContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

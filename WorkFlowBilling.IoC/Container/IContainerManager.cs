@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Web.Mvc;
 using WorkFlowBilling.IoC.Attributes;
 
 namespace WorkFlowBilling.IoC.Container
@@ -33,5 +34,16 @@ namespace WorkFlowBilling.IoC.Container
         /// <typeparam name="T">Тип объекта</typeparam>
         /// <param name="obj">Объект</param>
         void Inject<T>(T obj) where T : class;
+
+        /// <summary>
+        /// Подставить свойства в глобальные фильтры
+        /// </summary>
+        /// <param name="filterCollection">Список глобальных фильтров</param>
+        void InjectGlobalFilters(GlobalFilterCollection filterCollection);
+
+        /// <summary>
+        /// Зарегистрировать фильтры
+        /// </summary>
+        void RegisterAspNetMvcFilterProvider();
     }
 }

@@ -80,5 +80,24 @@ namespace WorkFlowBilling.IoC.Tests.Extensions
             //THEN
             Assert.NotNull(propertyInjectedClass.InjectableInstance);
         }
+
+        [Test]
+        public void ContainerManager_InjectGlobalFilters_InjectCorrect()
+        {
+            //GIVEN
+            var containerManager = new ContainerManager();
+            containerManager.RegisterAssembliesTypes(typeof(AssemblyRef).Assembly);
+            var globalFilter = new GlobalFilter();
+            var globalFilterCollection = new GlobalFilterCollection()
+            {
+                globalFilter
+            };
+
+            //WHEN
+            containerManager.InjectGlobalFilters(globalFilterCollection);
+
+            //THEN
+            Assert.NotNull(globalFilter.InjectableInstance);
+        }
     }
 }

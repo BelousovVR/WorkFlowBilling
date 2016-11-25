@@ -218,6 +218,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Filters\ExceptionLogFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -313,6 +314,10 @@
     <Content Include="Content\Bootstrap\bootstrap.less" />
     <Content Include="Content\Bootstrap\badges.less" />
     <Content Include="Content\Bootstrap\alerts.less" />
+    <Content Include="NLog.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\jquery\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
@@ -389,6 +394,14 @@
     <ProjectReference Include="..\WorkFlowBilling.IoC\WorkFlowBilling.IoC.csproj">
       <Project>{100E670F-EB86-4BD7-AF10-FBFB5CC642B7}</Project>
       <Name>WorkFlowBilling.IoC</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WorkFlowBilling.Logger.Impl\WorkFlowBilling.Logger.Impl.csproj">
+      <Project>{85271377-7925-4d0d-9677-5bbd9844952d}</Project>
+      <Name>WorkFlowBilling.Logger.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WorkFlowBilling.Logger\WorkFlowBilling.Logger.csproj">
+      <Project>{06583183-6490-4c9a-a259-6eb8ba93ed88}</Project>
+      <Name>WorkFlowBilling.Logger</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

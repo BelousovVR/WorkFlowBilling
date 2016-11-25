@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Web.Mvc;
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Extensions;
-using System;
+using WorkFlowBilling.Common.Extensions;
 
 namespace WorkFlowBilling.IoC.Container
 {
@@ -28,6 +28,22 @@ namespace WorkFlowBilling.IoC.Container
                 Builder.RegisterControllers(assembly).PropertiesAutowired();
             else
                 Builder.RegisterControllers(assembly);
+        }
+
+        /// <summary>
+        /// Подставить свойства в глобальные фильтры
+        /// </summary>
+        public void InjectGlobalFilters(GlobalFilterCollection filterCollection)
+        {
+            filterCollection.ForEach(_ => Inject(_.Instance));
+        }
+
+        /// <summary>
+        /// Зарегистрировать фильтры
+        /// </summary>
+        public void RegisterAspNetMvcFilterProvider()
+        {
+            Builder.RegisterFilterProvider();
         }
 
         /// <summary>

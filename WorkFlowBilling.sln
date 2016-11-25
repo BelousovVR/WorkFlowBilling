@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Logger.Func
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.TestFramework", "WorkFlowBilling.TestFramework\WorkFlowBilling.TestFramework.csproj", "{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{EF7F62F7-1992-4485-A3E1-A047B18015A1}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WorkFlowBilling.Logs", "WorkFlowBilling.Logs\WorkFlowBilling.Logs.sqlproj", "{18A0F6C8-FA75-4018-8557-D2C03419A9C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +93,12 @@ Global
 		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,5 +115,6 @@ Global
 		{85271377-7925-4D0D-9677-5BBD9844952D} = {D0412CCA-B653-42FE-BCF2-EC29836A5C75}
 		{46B78B06-93F1-4125-89F0-3A8D0DCC13B0} = {D0412CCA-B653-42FE-BCF2-EC29836A5C75}
 		{81DFAB10-1808-4B33-AFC3-9077CF5D2A02} = {BDA2F661-C7DD-4CB4-9042-27552853CBC6}
+		{18A0F6C8-FA75-4018-8557-D2C03419A9C5} = {EF7F62F7-1992-4485-A3E1-A047B18015A1}
 	EndGlobalSection
 EndGlobal
