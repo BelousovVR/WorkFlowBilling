@@ -1,72 +1,118 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using WorkFlowBilling.Logger.Enumerations;
 using WorkFlowBilling.TestFramework.Common;
+using System.Data;
+using System.Configuration;
+using System.Data.SqlClient;
 using ILogger = WorkFlowBilling.Logger.Services.ILogger;
+using WorkFlowBilling.Common.Extensions;
 
 namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
 {
     [TestFixture]
     public class LogServiceTests : BaseFunctionalTest
     {
-        private static string GetLogFileFullPath()
-        {
-            var codeBase = Assembly.GetExecutingAssembly().GetName().CodeBase;
-            var uriBuilder = new UriBuilder(codeBase);
-            var normalizedPath = Uri.UnescapeDataString(uriBuilder.Path);
-            var binDir = Path.GetDirectoryName(normalizedPath);
+        private const string clearLogsQuery = "DELETE FROM dbo.Logs";
+        private const string getLogsQuery = "SELECT Message, Level FROM dbo.Logs";
+        private static string connectionString = ConfigurationManager.ConnectionStrings["Logs"].ConnectionString;
 
-            return binDir + "\\logs\\LoggerFunctionalTests.txt";
-        }
-
-        private class SaveToLogTestCase
+        /// <summary>
+        /// Структура, содержащий обязательные данные по логу - уровень и сообщение
+        /// </summary>
+        private struct LogMainInfo
         {
-            public LogMessageLevel LogMessageLevel { get; set; }
+            public LogMessageLevel Level { get; set; }
             public string Message { get; set; }
-            public string AwaitedLogMessage { get; set; }
         }
 
-        private static SaveToLogTestCase[] SaveToLogCases = new[]
+        /// <summary>
+        /// Очистить базу данных логов. 
+        /// </summary>
+        private void ClearLogDataBase()
         {
-            new SaveToLogTestCase()
+            // Так как Logger может записывать данные в БД напрямую, без использования фреймворков,
+            // То функциональные тесты логгера не должны содержать ссылку на какой-либо фреймворк.
+            // Все действия с БД должны проводиться на максимально низком уровне.
+            // В данном случае используется ADO.NET
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                LogMessageLevel = LogMessageLevel.Trace,
-                Message = "this is trace message",
-                AwaitedLogMessage = "Level: Trace; Message: this is trace message"
+                SqlCommand command = new SqlCommand(clearLogsQuery, connection);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            };
+        }
+
+        /// <summary>
+        /// Получить проверяемые данные из БД
+        /// </summary>
+        /// <returns></returns>
+        private List<LogMainInfo> GetLogMainInfos()
+        {
+            // Так как Logger может записывать данные в БД напрямую, без использования фреймворков,
+            // То функциональные тесты логгера не должны содержать ссылку на какой-либо фреймворк.
+            // Все действия с БД должны проводиться на максимально низком уровне.
+            // В данном случае используется ADO.NET
+
+            var result = new List<LogMainInfo>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(getLogsQuery, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(new LogMainInfo
+                    {
+                        Level =  ((string) reader["Level"]).ParseEnum<LogMessageLevel>(),
+                        Message = (string) reader["Message"]
+                    });
+
+                   
+                }
+                reader.Close();
+            }
+
+            return result;
+        }
+
+          private static LogMainInfo[] SaveToLogCases = new[]
+        {
+            new LogMainInfo()
+            {
+                Level = LogMessageLevel.Trace,
+                Message = "this is trace message"
             },
-            new SaveToLogTestCase()
+            new LogMainInfo()
             {
-                LogMessageLevel = LogMessageLevel.Debug,
-                Message = "this is debug message",
-                AwaitedLogMessage = "Level: Debug; Message: this is debug message"
+                Level = LogMessageLevel.Debug,
+                Message = "this is debug message"
             },
-            new SaveToLogTestCase()
+            new LogMainInfo()
             {
-                LogMessageLevel = LogMessageLevel.Info,
-                Message = "this is info message",
-                AwaitedLogMessage = "Level: Info; Message: this is info message"
+                Level = LogMessageLevel.Info,
+                Message = "this is info message"
             },
-            new SaveToLogTestCase()
+            new LogMainInfo()
             {
-                LogMessageLevel = LogMessageLevel.Warning,
-                Message = "this is warning message",
-                AwaitedLogMessage = "Level: Warn; Message: this is warning message"
+                Level = LogMessageLevel.Warning,
+                Message = "this is warning message"
             },
-            new SaveToLogTestCase()
+            new LogMainInfo()
             {
-                LogMessageLevel = LogMessageLevel.Error,
-                Message = "this is error message",
-                AwaitedLogMessage = "Level: Error; Message: this is error message"
+                Level = LogMessageLevel.Error,
+                Message = "this is error message"
             },
-            new SaveToLogTestCase()
+            new LogMainInfo()
             {
-                LogMessageLevel = LogMessageLevel.Fatal,
+                Level = LogMessageLevel.Fatal,
                 Message = "this is fatal message",
-                AwaitedLogMessage = "Level: Fatal; Message: this is fatal message"
             },
         };
 
@@ -74,8 +120,8 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             var saveToLogTestCases = SaveToLogCases.Select(_ =>
             {
-                var testCaseData = new TestCaseData(_.LogMessageLevel, _.Message, _.AwaitedLogMessage);
-                testCaseData.SetName($"LogServiceTests_SaveToLog_{_.LogMessageLevel}");
+                var testCaseData = new TestCaseData(_.Level, _.Message);
+                testCaseData.SetName($"LogServiceTests_SaveToLog_{_.Level}");
                 return testCaseData;
             })
             .ToList();
@@ -83,42 +129,47 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
             return saveToLogTestCases;
         }
 
-        // Путь к bin-файлу
-        private static string LogFileFullPath = GetLogFileFullPath();
+        /// <summary>
+        /// Перед запуском каждого теста
+        /// </summary>
+        [SetUp]
+        public override void BeforeTestRun()
+        {
+            base.BeforeTestRun();
+            ClearLogDataBase();
+        }
 
-        public ILogger Logger { get; set; }
-
+        /// <summary>
+        /// Регистрация типов для DI
+        /// </summary>
         public override void RegisterAssemblies()
         {
             ContainerManager.RegisterAssembliesTypes(typeof(Impl.AssemblyRef).Assembly);
         }
 
-        [SetUp]
-        public override void BeforeTestRun()
-        {
-            base.BeforeTestRun();
+        public ILogger Logger { get; set; }
 
-            if (File.Exists(LogFileFullPath))
-                File.Delete(LogFileFullPath);
-        }
-       
         [Test]
         [Category("Functional")]
         public void LogServiceTests_Trace_TraceEnabled()
         {
             //GIVEN
             var message = "this is trace message";
-            var awaitedLines = new string[]
-            {
-                "Level: Trace; Message: this is trace message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Trace
+                }
             };
 
             //WHEN
             Logger.Trace(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test]
@@ -127,17 +178,21 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             //GIVEN
             var message = "this is debug message";
-            var awaitedLines = new string[]
-            {
-                "Level: Debug; Message: this is debug message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Debug
+                }
             };
 
             //WHEN
             Logger.Debug(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test]
@@ -146,17 +201,21 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             //GIVEN
             var message = "this is info message";
-            var awaitedLines = new string[]
-            {
-                "Level: Info; Message: this is info message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Info
+                }
             };
 
             //WHEN
             Logger.Info(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test]
@@ -165,17 +224,21 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             //GIVEN
             var message = "this is warning message";
-            var awaitedLines = new string[]
-            {
-                "Level: Warn; Message: this is warning message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Warning
+                }
             };
 
             //WHEN
             Logger.Warning(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test]
@@ -184,17 +247,21 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             //GIVEN
             var message = "this is error message";
-            var awaitedLines = new string[]
-            {
-                "Level: Error; Message: this is error message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Error
+                }
             };
 
             //WHEN
             Logger.Error(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test]
@@ -203,35 +270,42 @@ namespace WorkFlowBilling.Logger.FunctionalTests.ServicesTests
         {
             //GIVEN
             var message = "this is fatal message";
-            var awaitedLines = new string[]
-            {
-                "Level: Fatal; Message: this is fatal message"
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = LogMessageLevel.Fatal
+                }
             };
 
             //WHEN
             Logger.Fatal(message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
 
         [Test, TestCaseSource(nameof(GetSaveToLogTestCases))]
         [Category("Functional")]
-        public void LogServiceTests_SaveToLog_Parametrized(LogMessageLevel level, string message, string awaitedMessage)
+        public void LogServiceTests_SaveToLog_Parametrized(LogMessageLevel level, string message)
         {
-            //GIVEN
-            var awaitedLines = new string[]
-            {
-                awaitedMessage
+            var awaitedResult = new List<LogMainInfo> {
+                new LogMainInfo()
+                {
+                    Message = message,
+                    Level = level
+                }
             };
 
             //WHEN
             Logger.SaveToLog(level, message);
 
             //THEN
-            var lines = File.ReadAllLines(LogFileFullPath);
-            Assert.AreEqual(awaitedLines, lines);
+            var logs = GetLogMainInfos();
+
+            Assert.AreEqual(awaitedResult, logs);
         }
     }
 }

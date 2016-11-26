@@ -15,7 +15,6 @@ namespace WorkFlowBilling.Common.Extensions
         /// <param name="enumerable">Enumerable</param>
         /// <param name="action">Действие</param>
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
-            where T : class
         {
             foreach (var item in enumerable)
                 action(item);

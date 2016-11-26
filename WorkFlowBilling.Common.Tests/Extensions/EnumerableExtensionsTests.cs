@@ -14,7 +14,7 @@ namespace WorkFlowBilling.Common.Tests
         public void EnumerableExtensions_ForEach_EmptyEnumerable()
         {
             //GIVEN
-            var list = new List<int>();
+            IEnumerable<int> list = new List<int>();
 
             //WHEN
             var action = new TestDelegate(() => list.ForEach(_ => _.ToString()));
@@ -27,7 +27,7 @@ namespace WorkFlowBilling.Common.Tests
         public void EnumerableExtensions_ForEach_ActionExecuted()
         {
             //GIVEN
-            var inputList = new List<int>() { 1, 2, 3 };
+            IEnumerable<int> inputList = new List<int>() { 1, 2, 3 };
             var outputList = new List<int>();
             var awaitedList = new List<int>() { 11, 12, 13 };
 

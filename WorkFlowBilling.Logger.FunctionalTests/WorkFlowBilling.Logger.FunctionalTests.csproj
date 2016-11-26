@@ -48,6 +48,8 @@
       <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -62,6 +64,10 @@
     <Compile Include="ServicesTests\LogServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WorkFlowBilling.Common\WorkFlowBilling.Common.csproj">
+      <Project>{e83346fb-c83e-46a4-bec0-6061f812486c}</Project>
+      <Name>WorkFlowBilling.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WorkFlowBilling.IoC\WorkFlowBilling.IoC.csproj">
       <Project>{100e670f-eb86-4bd7-af10-fbfb5cc642b7}</Project>
       <Name>WorkFlowBilling.IoC</Name>
