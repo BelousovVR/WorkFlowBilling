@@ -21,8 +21,12 @@ namespace WorkFlowBilling
             // Зарегистрировать контроллеры
             containerManager.RegisterControllers(typeof(MvcApplication).Assembly);
 
+            // установка провайдеров для фильтров
+            containerManager.RegisterAspNetMvcFilterProvider();
+
             // Зарегистрировать типы
             containerManager.RegisterAssembliesTypes(typeof(Compiler.Impl.AssemblyRef).Assembly);
+            containerManager.RegisterAssembliesTypes(typeof(Logger.Impl.AssemblyRef).Assembly);
 
             // Установка сопоставителя зависимостей
             containerManager.SetAspNetMvcResolver();
@@ -31,6 +35,9 @@ namespace WorkFlowBilling
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Проинжектить глобальные фильтры
+            containerManager.InjectGlobalFilters(GlobalFilters.Filters);
 
             // Добавлено для корректной работы BundleTransformer.Less
             // https://github.com/Taritsyn/JavaScriptEngineSwitcher/wiki/How-to-upgrade-applications-to-version-2.X
