@@ -13,9 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Common", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Common.Tests", "WorkFlowBilling.Common.Tests\WorkFlowBilling.Common.Tests.csproj", "{688DBE87-2FED-49DE-9ED7-985815CF7B1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Compiler", "WorkFlowBilling.Compiler\WorkFlowBilling.Compiler.csproj", "{5C2EF34F-E993-4FE0-9F34-7CBD94597F7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Translator", "WorkFlowBilling.Compiler\WorkFlowBilling.Translator.csproj", "{5C2EF34F-E993-4FE0-9F34-7CBD94597F7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Compiler.Impl", "WorkFlowBilling.Compiler.Impl\WorkFlowBilling.Compiler.Impl.csproj", "{D5644ACD-35BD-43B5-B713-065AB75E466E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Translator.Impl", "WorkFlowBilling.Compiler.Impl\WorkFlowBilling.Translator.Impl.csproj", "{D5644ACD-35BD-43B5-B713-065AB75E466E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{FDE7052C-284D-4F5B-BB1C-EBFC9BCA9F63}"
 EndProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IoC", "IoC", "{2AA0F92A-E58
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{BDA2F661-C7DD-4CB4-9042-27552853CBC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Compiler.Tests", "WorkFlowBilling.Compiler.Tests\WorkFlowBilling.Compiler.Tests.csproj", "{8703E6DD-BB66-487C-8F52-969AA65A0C71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowBilling.Translator.Tests", "WorkFlowBilling.Compiler.Tests\WorkFlowBilling.Translator.Tests.csproj", "{8703E6DD-BB66-487C-8F52-969AA65A0C71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logger", "Logger", "{D0412CCA-B653-42FE-BCF2-EC29836A5C75}"
 EndProject

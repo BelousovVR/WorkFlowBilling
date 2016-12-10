@@ -25,7 +25,7 @@ namespace WorkFlowBilling
             containerManager.RegisterAspNetMvcFilterProvider();
 
             // Зарегистрировать типы
-            containerManager.RegisterAssembliesTypes(typeof(Compiler.Impl.AssemblyRef).Assembly);
+            containerManager.RegisterAssembliesTypes(typeof(Translator.Impl.AssemblyRef).Assembly);
             containerManager.RegisterAssembliesTypes(typeof(Logger.Impl.AssemblyRef).Assembly);
 
             // Установка сопоставителя зависимостей

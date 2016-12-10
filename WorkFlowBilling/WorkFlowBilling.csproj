@@ -383,13 +383,13 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WorkFlowBilling.Compiler.Impl\WorkFlowBilling.Compiler.Impl.csproj">
+    <ProjectReference Include="..\WorkFlowBilling.Compiler.Impl\WorkFlowBilling.Translator.Impl.csproj">
       <Project>{d5644acd-35bd-43b5-b713-065ab75e466e}</Project>
-      <Name>WorkFlowBilling.Compiler.Impl</Name>
+      <Name>WorkFlowBilling.Translator.Impl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WorkFlowBilling.Compiler\WorkFlowBilling.Compiler.csproj">
+    <ProjectReference Include="..\WorkFlowBilling.Compiler\WorkFlowBilling.Translator.csproj">
       <Project>{5c2ef34f-e993-4fe0-9f34-7cbd94597f7c}</Project>
-      <Name>WorkFlowBilling.Compiler</Name>
+      <Name>WorkFlowBilling.Translator</Name>
     </ProjectReference>
     <ProjectReference Include="..\WorkFlowBilling.IoC\WorkFlowBilling.IoC.csproj">
       <Project>{100E670F-EB86-4BD7-AF10-FBFB5CC642B7}</Project>

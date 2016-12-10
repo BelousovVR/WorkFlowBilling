@@ -1,4 +1,4 @@
-﻿namespace WorkFlowBilling.Compiler.Impl
+﻿namespace WorkFlowBilling.Translator.Impl
 {
     /// <summary>
     /// Пустой класс для получения ссылки на сборку
