@@ -41,13 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Operators\IOperator.cs" />
+    <Compile Include="Operators\OperatorAssociativity.cs" />
+    <Compile Include="Operators\OperatorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Signatures\ISignature.cs" />
+    <Compile Include="Signatures\SignatureType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorkFlowBilling.IoC\WorkFlowBilling.IoC.csproj">
       <Project>{100e670f-eb86-4bd7-af10-fbfb5cc642b7}</Project>
       <Name>WorkFlowBilling.IoC</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

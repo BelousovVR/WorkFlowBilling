@@ -42,6 +42,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyRef.cs" />
+    <Compile Include="Operators\AdditionOperator.cs" />
+    <Compile Include="Operators\ConditionOperator.cs" />
+    <Compile Include="Operators\DivisionOperator.cs" />
+    <Compile Include="Operators\EqualityOperator.cs" />
+    <Compile Include="Operators\GreaterThanOrEqualOperator.cs" />
+    <Compile Include="Operators\InequalityOperator.cs" />
+    <Compile Include="Operators\LessThanOperator.cs" />
+    <Compile Include="Operators\GreaterThanOperator.cs" />
+    <Compile Include="Operators\LessThanOrEqualOperator.cs" />
+    <Compile Include="Operators\LogicalOrOperator.cs" />
+    <Compile Include="Operators\LogicalAndOperator.cs" />
+    <Compile Include="Operators\MultiplicationOperator.cs" />
+    <Compile Include="Operators\NegationOperator.cs" />
+    <Compile Include="Operators\OperatorBase.cs" />
+    <Compile Include="Operators\PrefixDecrementOperator.cs" />
+    <Compile Include="Operators\PrefixIncrementOperator.cs" />
+    <Compile Include="Operators\SubstractionOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +70,9 @@
       <Project>{100e670f-eb86-4bd7-af10-fbfb5cc642b7}</Project>
       <Name>WorkFlowBilling.IoC</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Functions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
