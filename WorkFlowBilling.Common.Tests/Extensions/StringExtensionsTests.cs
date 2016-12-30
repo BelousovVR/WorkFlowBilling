@@ -28,5 +28,20 @@ namespace WorkFlowBilling.Common.Tests.Extensions
             //THEN
             Assert.AreEqual(awaitedEnum, resultEnum);
         }
+
+        [Test]
+        public void StringExtensions_TryGetDecimal()
+        {
+            //GIVEN
+            var inputString = "22.12abs";
+            decimal awaitedDecimal = 22.12M;
+
+            //WHEN
+            decimal decimalValue;
+            var convertSuccess = inputString.TryGetDecimal(out decimalValue);
+
+            //THEN
+            Assert.AreEqual(awaitedDecimal, decimalValue);
+        }
     }
 }
