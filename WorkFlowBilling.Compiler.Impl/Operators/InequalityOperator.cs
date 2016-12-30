@@ -1,10 +1,13 @@
 ﻿using WorkFlowBilling.Compiler.Operators;
+using WorkFlowBilling.IoC.Attributes;
+using WorkFlowBilling.IoC.Enumerations;
 
 namespace WorkFlowBilling.Compiler.Impl.Operators
 {
     /// <summary>
     /// Оператор "не равно" (!=)
     /// </summary>
+    [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
     public class InequalityOperator : OperatorBase
     {
         public InequalityOperator()

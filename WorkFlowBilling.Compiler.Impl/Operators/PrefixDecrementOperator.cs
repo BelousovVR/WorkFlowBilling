@@ -1,4 +1,6 @@
 ﻿using WorkFlowBilling.Compiler.Operators;
+using WorkFlowBilling.IoC.Attributes;
+using WorkFlowBilling.IoC.Enumerations;
 
 namespace WorkFlowBilling.Compiler.Impl.Operators
 {
@@ -6,6 +8,7 @@ namespace WorkFlowBilling.Compiler.Impl.Operators
     /// Префиксный оператора уменьшения
     /// --(5 + 6) <=>  (5 + 6) - 1
     /// </summary>
+    [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
     public class PrefixDecrementOperator : OperatorBase
     {
         public PrefixDecrementOperator()

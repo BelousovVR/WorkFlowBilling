@@ -1,4 +1,6 @@
 ﻿using WorkFlowBilling.Compiler.Operators;
+using WorkFlowBilling.IoC.Attributes;
+using WorkFlowBilling.IoC.Enumerations;
 
 namespace WorkFlowBilling.Compiler.Impl.Operators
 {
@@ -6,6 +8,7 @@ namespace WorkFlowBilling.Compiler.Impl.Operators
     /// Префиксный оператора увеличения
     /// ++(5 + 6) <=> 1 + (5 + 6)
     /// </summary>
+    [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
     public class PrefixIncrementOperator : OperatorBase
     {
         public PrefixIncrementOperator()

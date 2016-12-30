@@ -8,7 +8,7 @@ namespace WorkFlowBilling.Compiler.Impl.Operators
     /// <summary>
     /// Базовый класс для оператора
     /// </summary>
-    public abstract class OperatorBase : IOperator
+    public abstract class OperatorBase : IOperatorSignature
     {
         /// <summary>
         /// Тип ассоциативности оператора
