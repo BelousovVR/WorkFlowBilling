@@ -1,8 +1,11 @@
-﻿namespace WorkFlowBilling.Compiler.Signatures
+﻿using WorkFlowBilling.IoC.Attributes;
+
+namespace WorkFlowBilling.Compiler.Signatures
 {
     /// <summary>
     /// Интерфейс сигнатуры
     /// </summary>
+    [AutoInjectable] 
     public interface ISignature
     {
         /// <summary>

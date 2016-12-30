@@ -41,10 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Operators\IOperator.cs" />
+    <Compile Include="Exceptions\StringConvertationException.cs" />
+    <Compile Include="Functions\IFunctionSignature.cs" />
+    <Compile Include="Operators\IOperatorSignature.cs" />
     <Compile Include="Operators\OperatorAssociativity.cs" />
     <Compile Include="Operators\OperatorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IWarsawNotationService.cs" />
     <Compile Include="Signatures\ISignature.cs" />
     <Compile Include="Signatures\SignatureType.cs" />
   </ItemGroup>
@@ -54,9 +57,7 @@
       <Name>WorkFlowBilling.IoC</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

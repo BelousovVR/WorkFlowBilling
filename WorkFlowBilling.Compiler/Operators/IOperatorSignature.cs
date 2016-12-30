@@ -5,7 +5,7 @@ namespace WorkFlowBilling.Compiler.Operators
     /// <summary>
     /// Базовый интерфейс оператора
     /// </summary>
-    public interface IOperator : ISignature
+    public interface IOperatorSignature : ISignature
     {
         /// <summary>
         /// Тип ассоциативность оператора
