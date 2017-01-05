@@ -50,7 +50,7 @@ namespace WorkFlowBilling.Compiler.Tests.OperatorsTests
         }
 
         [Test, TestCaseSource(nameof(GetOperatorsMatchWithNullStringTestCases))]
-        public void Operators_NullInputString(IOperator operatorObj)
+        public void Operators_NullInputString(IOperatorSignature operatorObj)
         {
             // GIVEN
             string inputString = null;
@@ -63,7 +63,7 @@ namespace WorkFlowBilling.Compiler.Tests.OperatorsTests
         }
 
         [Test, TestCaseSource(nameof(GetOperatorsMatchTestCases))]
-        public void Operators_Match(IOperator operatorObj, string operatorKey)
+        public void Operators_Match(IOperatorSignature operatorObj, string operatorKey)
         {
             //WHEN
             var isMatched = operatorObj.Match(operatorKey);

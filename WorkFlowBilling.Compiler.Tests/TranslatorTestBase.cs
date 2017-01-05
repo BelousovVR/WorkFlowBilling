@@ -9,7 +9,7 @@ namespace WorkFlowBilling.Compiler.Tests
     /// </summary>
     public class TranslatorTestBase
     {
-        protected static Dictionary<string, IOperator> Operators = new Dictionary<string, IOperator>()
+        protected static Dictionary<string, IOperatorSignature> Operators = new Dictionary<string, IOperatorSignature>()
         {
             {"+", new AdditionOperator()},
             {"-", new SubstractionOperator()},

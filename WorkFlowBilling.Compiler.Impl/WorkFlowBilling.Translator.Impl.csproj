@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyRef.cs" />
+    <Compile Include="Converters\ProcessedStringType.cs" />
+    <Compile Include="Helpers\TranslationConstantHelper.cs" />
     <Compile Include="Operators\AdditionOperator.cs" />
     <Compile Include="Operators\ConditionOperator.cs" />
     <Compile Include="Operators\DivisionOperator.cs" />
@@ -54,14 +56,21 @@
     <Compile Include="Operators\LogicalOrOperator.cs" />
     <Compile Include="Operators\LogicalAndOperator.cs" />
     <Compile Include="Operators\MultiplicationOperator.cs" />
+    <Compile Include="Operators\NegatationNumberOperator.cs" />
     <Compile Include="Operators\NegationOperator.cs" />
     <Compile Include="Operators\OperatorBase.cs" />
     <Compile Include="Operators\PrefixDecrementOperator.cs" />
     <Compile Include="Operators\PrefixIncrementOperator.cs" />
     <Compile Include="Operators\SubstractionOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Converters\PostfixConverter.cs" />
+    <Compile Include="Services\WarsawNotationService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WorkFlowBilling.Common\WorkFlowBilling.Common.csproj">
+      <Project>{E83346FB-C83E-46A4-BEC0-6061F812486C}</Project>
+      <Name>WorkFlowBilling.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WorkFlowBilling.Compiler\WorkFlowBilling.Translator.csproj">
       <Project>{5c2ef34f-e993-4fe0-9f34-7cbd94597f7c}</Project>
       <Name>WorkFlowBilling.Translator</Name>
