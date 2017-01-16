@@ -25,8 +25,8 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
         /// </summary>
         private static List<StringConvertTestData> PostfixConvertationData = new List<StringConvertTestData>()
         {
+            // Тесты на простые арифметические операторы
             new StringConvertTestData("123.12", "123.12"),
-            new StringConvertTestData("{Variable}", "{Variable}"),
             new StringConvertTestData("5 - 3", "5 3 -"),
             new StringConvertTestData("5 / 3", "5 3 /"),
             new StringConvertTestData("5 + 3", "5 3 +"),
@@ -39,32 +39,42 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
             new StringConvertTestData("(4+5)*7-(3/2+15)", "4 5 + 7 * 3 2 / 15 + -"),
             new StringConvertTestData("{x} + 5 * 2", "{x} 5 2 * +"),
             new StringConvertTestData("(0-3) - (0-3)", "0 3 - 0 3 - -"),
-            
-
-             // TODO: тут тоже разобраться - скорее всего неверное выражение - правильное 
-             // Надо -3 преобразовывать в 0 -3
-            new StringConvertTestData("-3 + -(8*2)", "3 - + 8 2 * -"),
-            new StringConvertTestData("3 + -3", "3 + 3 -"),
-            new StringConvertTestData("-3 * -3", "3 * - 3 -"),
-            //
-
+            new StringConvertTestData("-3 + -(8*2)", "0 3 - 0 8 2 * - +"),
+            new StringConvertTestData("3 + -3", "3 0 3 - +"),
+            new StringConvertTestData("-3 * -3", "0 3 - 0 3 - *"),
             new StringConvertTestData("(8 + 2 * 5) / (1 + 3 * 2 - 4)", "8 2 5 * + 1 3 2 * + 4 - /"),
+            new StringConvertTestData("-3 - -3", "0 3 - 0 3 - -"),
+            new StringConvertTestData("(-3) - (-3)", "0 3 - 0 3 - -"),
+            new StringConvertTestData("--3", "3 --"),
+            new StringConvertTestData("++3", "3 ++"),
+            new StringConvertTestData("++3 - 5 ", "3 ++ 5 -"),
+            new StringConvertTestData("++3 * 5 ", "3 ++ 5 *"),
+            new StringConvertTestData("++3 / 5 ", "3 ++ 5 /"),
+            new StringConvertTestData("--3 - 5 ", "3 -- 5 -"),
+            new StringConvertTestData("--3 * 5 ", "3 -- 5 *"),
+            new StringConvertTestData("--3 / 5 ", "3 -- 5 /"),
+
+            // TODO: Тесты на переменные
+            new StringConvertTestData("{Variable}", "{Variable}"),
+
+            //TODO: дописать Тесты на логические операторы
+            new StringConvertTestData("5 != 3 ", "5 3 !="),
+            new StringConvertTestData("5 < 3 ", "5 3 <"),
+            new StringConvertTestData("5 > 3 ", "5 3 >"),
+            new StringConvertTestData("5 >= 3 ", "5 3 >="),
+            new StringConvertTestData("5 <= 3 ", "5 3 <="),
+            new StringConvertTestData("2 > 0 || 3 < 5", "2 0 > 3 5 < ||"),
+            new StringConvertTestData("2 > 0 && 3 < 5", "2 0 > 3 5 < &&"),
+            new StringConvertTestData("!(2 > 0) && 3 < 5", "2 0 > ! 3 5 < &&"),
+            new StringConvertTestData("2 > 2 + 0 && 3 < 5", "2 2 0 + > 3 5 < &&"),
+
+            //TODO: тесты на функции
 
 
-            // TODO: тут тоже разобраться - правильно 3 - 3 - -
-            new StringConvertTestData("-3 - -3", "3 - - 3 -"),
-            new StringConvertTestData("(-3) - (-3)", "3 - 3 - -"),
-            //
-
-            // TODO: тесты на постфиксные префиксные операторы ++ --
-            new StringConvertTestData("-3 - -3", "3 - - 3 -")
-
-
-            // TODO: тесты на логические операторы
         };
 
         /// <summary>
-        /// 
+        /// Получить тест-кейсы для преобразования из инфиксной строки в постфиксную
         /// </summary>
         /// <returns></returns>
         private static List<TestCaseData> GetPostfixStringTestCases()
@@ -82,10 +92,8 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
            .ToList();
         }
 
-
         public IWarsawNotationService WarsawNotationService { get; set; }
 
-        
         /// <summary>
         /// Перед запуском каждого теста
         /// </summary>
@@ -103,10 +111,6 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
             ContainerManager.RegisterAssembliesTypes(typeof(WorkFlowBilling.Translator.Impl.AssemblyRef).Assembly);
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
         [Test]
         [Category("Functional")]
         public void WarsawNotation_VariableNoCloseChar()

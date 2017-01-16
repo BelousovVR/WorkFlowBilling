@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorkFlowBilling.Compiler.Operators;
+﻿using System.Collections.Generic;
 using WorkFlowBilling.Compiler.Services;
 using WorkFlowBilling.Compiler.Signatures;
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
-using WorkFlowBilling.Compiler.Exceptions;
-using System.Globalization;
-using WorkFlowBilling.Common.Helpers;
-using WorkFlowBilling.Common.Extensions;
 using WorkFlowBilling.Compiler.Impl.Helpers;
 using WorkFlowBilling.Compiler.Impl.Converters;
 
@@ -20,16 +11,14 @@ namespace WorkFlowBilling.Compiler.Impl.Services
     [AutoInjectableInstance(InstanceLifeTime.InstancePerRequest)]
     public class WarsawNotationService : IWarsawNotationService
     {
-        // TODO: это возможно надо убрать. А результат возвращать в виде листа элементов
-        private const string _Delitimer = " ";
+        private readonly string _Delitimer = TranslationConstantHelper.ElementsDelitimer;
 
         public IEnumerable<ISignature> Signatures { get; set; }
 
         /// <summary>
-        /// 
+        /// Сконвертировать строку, содержащюю выражение в инфиксной форме в постфиксную форму
         /// </summary>
-        /// <param name="stack"></param>
-        /// <param name="inputString"></param>
+        /// <param name="infixString">Строка, содержащяя выражение в инфиксной форме</param>
         /// <returns></returns>
         public string ConvertToPostfixString(string infixString)
         {

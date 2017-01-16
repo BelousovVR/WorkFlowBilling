@@ -9,9 +9,11 @@ using WorkFlowBilling.Common.Helpers;
 using WorkFlowBilling.Compiler.Exceptions;
 using WorkFlowBilling.Compiler.Functions;
 using WorkFlowBilling.Compiler.Impl.Helpers;
+using WorkFlowBilling.Compiler.Impl.Operators;
 using WorkFlowBilling.Compiler.Operators;
 using WorkFlowBilling.Compiler.Signatures;
 using static System.Char;
+using static WorkFlowBilling.Compiler.Impl.Converters.PostfixConverterProccessHelper;
 
 namespace WorkFlowBilling.Compiler.Impl.Converters
 {
@@ -22,7 +24,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
     {
         private string _InputString;
 
-        private Stack<string> _Stack;
+        private Stack<PostfixConverterStackValue> _Stack;
 
         private string _Delitimer;
 
@@ -34,90 +36,17 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
         private CultureInfo _CultureInfo = CultureInfoHelper.English_USA_Culture;
 
-        // TODO: тоже в класс потом вынести
-
         /// <summary>
-        /// Проверить, можем ли мы обработать левую скобку
-        /// </summary>
-        /// <param name="lastProcessedType">Последний обработанный синтаксический тип</param>
-        /// <returns></returns>
-        private bool CheckLeftBracketProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.In(ProcessedStringType.LeftBracket, 
-                                        ProcessedStringType.Function,
-                                        ProcessedStringType.Operator,
-                                        ProcessedStringType.Unknown);
-        }
-
-        /// <summary>
-        /// Проверить, можем ли мы обработать правую скобку
-        /// </summary>
-        /// <param name="lastProcessedType">Последний обработанный синтаксический тип</param>
-        /// <returns></returns>
-        private bool CheckRightBracketProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.NotIn(ProcessedStringType.FunctionDelitimer,
-                                           ProcessedStringType.Function);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lastProcessedType"></param>
-        /// <returns></returns>
-        private bool CheckNumberProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.NotIn(ProcessedStringType.RightBracket,
-                                           ProcessedStringType.Function,
-                                           ProcessedStringType.Variable);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lastProcessedType"></param>
-        /// <returns></returns>
-        private bool CheckVariableProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.NotIn(ProcessedStringType.RightBracket,
-                                           ProcessedStringType.Function,
-                                           ProcessedStringType.Variable);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lastProcessedType"></param>
-        /// <returns></returns>
-        private bool CheckFunctionProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.NotIn(ProcessedStringType.RightBracket,
-                                           ProcessedStringType.Function,
-                                           ProcessedStringType.Variable);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lastProcessedType"></param>
-        /// <returns></returns>
-        private bool CheckOperatorProcessAllowed(ProcessedStringType lastProcessedType)
-        {
-            return lastProcessedType.NotIn(ProcessedStringType.Function);
-        }
-
-        /// <summary>
-        /// 
+        /// Добавить строковое значение к выходной строке
         /// </summary>
         /// <param name="value"></param>
-        private void Append(string value)
+        private void AppendToOutputStringBuilder(string value)
         {
             _StringBuilder.Append($"{value}{_Delitimer}");
         }
 
         /// <summary>
-        /// 
+        /// Получить результат конвертации в чистом виде
         /// </summary>
         private string GetResult()
         {
@@ -125,26 +54,30 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         }
 
         /// <summary>
-        /// 
+        /// Обработать левую скобку 
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="chr">Символ</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         private void ProcessLeftBracket(char chr, int charIndex)
         {
             var processAlowed = CheckLeftBracketProcessAllowed(_LastProcessedType);
             if (!processAlowed)
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} обнаружен неожиданный символ '{chr}'");
 
-            _Stack.Push(chr.ToString());
+            _Stack.Push(new PostfixConverterStackValue
+            {
+                StringValue = chr.ToString(),
+                OriginalValue = chr
+            });
 
             _LastProcessedType = ProcessedStringType.LeftBracket;
         }
 
         /// <summary>
-        /// 
+        /// Обработать правую скобку
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="chr">Символ</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         private void ProcessRightBracket(char chr, int charIndex)
         {
             var processAlowed = CheckRightBracketProcessAllowed(_LastProcessedType);
@@ -158,28 +91,74 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             while (_Stack.Count > 0)
             {
-                var stackValue = _Stack.Pop();
+                var stackStringValue = _Stack.Pop().StringValue;
 
-                if (stackValue == TranslationConstantHelper.LeftBracketString)
+                if (stackStringValue == TranslationConstantHelper.LeftBracketString)
                 {
                     isLeftBracketFinded = true;
                     break;
                 }
                 else
-                    Append(stackValue);
+                    AppendToOutputStringBuilder(stackStringValue);
             }
 
             if (!isLeftBracketFinded)
                 throw new StringConvertationException($"В строке {_InputString} обнаружены несогласованные скобки");
 
+            //Если после этого шага на вершине стека оказывается символ функции, выталкиваем его в выходную строку
+            if (_Stack.Count > 0)
+            {
+                var stackTopStringValue = _Stack.Peek().StringValue;
+                var matchedFunction = GetMatchedFunctionSignature(stackTopStringValue);
+                if (matchedFunction != null)
+                {
+                    _Stack.Pop();
+                    AppendToOutputStringBuilder(stackTopStringValue);
+                }
+            }
+
             _LastProcessedType = ProcessedStringType.RightBracket;
         }
 
         /// <summary>
-        /// 
+        /// Обработать разделитель аргументов функции
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="chr">Символ</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
+        private void ProcessArgumentDelitimer(char chr, int charIndex)
+        {
+            var processAlowed = CheckFunctionArgumentDelitimerProcessAllowed(_LastProcessedType);
+            if (!processAlowed)
+                throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} обнаружен неожиданный символ '{chr}'");
+
+            var isLeftBracketFinded = false;
+            while (_Stack.Count > 0)
+            {
+                var stackStringValue = _Stack.Peek().StringValue;
+
+                if (stackStringValue == TranslationConstantHelper.LeftBracketString)
+                {
+                    isLeftBracketFinded = true;
+                    break;
+                }
+                else
+                {
+                    AppendToOutputStringBuilder(stackStringValue);
+                    _Stack.Pop();
+                }
+            }
+
+            if (!isLeftBracketFinded)
+                throw new StringConvertationException($"В строке {_InputString} обнаружены несогласованные скобки");
+
+            _LastProcessedType = ProcessedStringType.FunctionArgumentDelitimer;
+        }
+
+        /// <summary>
+        /// Обработать число и получить его строковую длину
+        /// </summary>
+        /// <param name="chr">Символ</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         private int ProcessNumberAndGetLength(char chr, int charIndex)
         {
             var processAlowed = CheckNumberProcessAllowed(_LastProcessedType);
@@ -196,17 +175,17 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             var numberString = number.ToString(_CultureInfo);
 
-            Append(numberString);
+            AppendToOutputStringBuilder(numberString);
             _LastProcessedType = ProcessedStringType.Number;
 
             return numberString.Length;
         }
 
         /// <summary>
-        /// 
+        /// Обработать сигнатуру переменной и вернуть ее длину
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="chr">Символ начала переменной</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         /// <returns></returns>
         private int ProcessVariableAndGetLength(char chr, int charIndex)
         {
@@ -221,7 +200,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             var variableStr = _InputString.Substring(charIndex, variableEndIndex + 1);
 
-            Append(variableStr);
+            AppendToOutputStringBuilder(variableStr);
 
             _LastProcessedType = ProcessedStringType.Variable;
 
@@ -229,10 +208,10 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         }
 
         /// <summary>
-        /// 
+        /// Обработать сигнатуру функции и получить ее длину
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="chr">Символ начала сигнатуры функции</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         private int ProcessFunctionAndGetLength(char chr, int charIndex, ISignature function)
         {
             var processAlowed = CheckFunctionProcessAllowed(_LastProcessedType);
@@ -241,133 +220,112 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             var funcKey = function.Keys.First();
 
-            Append(funcKey);
+            AppendToOutputStringBuilder(funcKey);
 
             return funcKey.Length;
         }
 
-
         /// <summary>
-        /// 
+        /// Получить приоритет оператора из значения стэка
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        private int GetOperatorPriorityByKey(string key)
+        private int GetOperatorPriorityByStackValue(PostfixConverterStackValue stackValue)
         {
-            var opr = _Signatures.OfType<IOperatorSignature>().Where(_ => _.Keys.First() == key).FirstOrDefault();
+            var opr = stackValue.OriginalValue as IOperatorSignature;
 
             if (opr == null)
-                throw new StringConvertationException($"При конвертации {_InputString} произошла ошибка стэка - нет оператора с ключом {key}");
+                throw new StringConvertationException(
+                    $"При конвертации {_InputString} произошла ошибка стэка - ожидался оператор, а обнаружен {stackValue.StringValue}");
 
             return opr.Priority;
         }
 
         /// <summary>
-        /// 
+        /// Обработать оператор с использованием стэка
+        /// </summary>
+        /// <param name="operatorSignature">Сигнатура оператора</param>
+        /// <param name="breakOperatorPriorityPredicate">Функция сравнения приоритетов операторов, 
+        /// при которой выталкивание из стэка должно завершиться
+        /// </param>
+        private void ProcessOperatorWithStack(IOperatorSignature operatorSignature, Func<int, int, bool> breakOperatorPriorityPredicate)
+        {
+            while (_Stack.Count > 0)
+            {
+                var stackValue = _Stack.Peek();
+                var stackStringValue = stackValue.StringValue;
+
+                // если разделитель - прерываем выталкивание
+                if (stackStringValue.In(TranslationConstantHelper.LeftBracketString,
+                    TranslationConstantHelper.FunctionArgumentDelitimer))
+                    break;
+
+                var stackOperatorPriority = GetOperatorPriorityByStackValue(stackValue);
+
+                if (breakOperatorPriorityPredicate(operatorSignature.Priority, stackOperatorPriority))
+                    break;
+
+                AppendToOutputStringBuilder(stackStringValue);
+                _Stack.Pop();
+            }
+        }
+
+        /// <summary>
+        /// Обработать оператор и получить его длину
         /// </summary>
         /// <param name="chr"></param>
         /// <param name="charIndex"></param>
         /// <param name="operators"></param>
         /// <returns></returns>
-        private int ProcessOperatorAndGetLength(char chr, int charIndex, IOperatorSignature operatorValue)
+        private int ProcessOperatorAndGetLength(char chr, int charIndex, IOperatorSignature operatorSignature)
         {
             var processAlowed = CheckOperatorProcessAllowed(_LastProcessedType);
             if (!processAlowed)
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} обнаружен неожиданный символ '{chr}'");
 
-            //Если текущий оператор - левоассоциативный, то выталкиваем все операторы из стека, пока не найдется оператор,
-            //приоритет которого меньше, чем у текущего.
-            //Если текущий оператор - правоассоциативный, то выталкиваем все операторы из стека, пока не найдется оператор,
-            //приоритет которого либо меньше, либо равен текущему.
-            //После этого добавляем текущий оператор в стек.
-            //Процесс выталкивания может выполняться, пока не будет достигнут разделитель (скобка, запятая), неполная
-            //сигнатура оператора или дно стека
+            // если это оператор минус (число), то преобразовываем строку в (0 - число)
+            if (operatorSignature is NegatationNumberOperator)
+                AppendToOutputStringBuilder("0");
 
-            /*
-                Если символ является оператором о1, тогда:
-                         1) пока…
-                         … (если оператор o1 право - ассоциированный) приоритет o1 меньше приоритета оператора, находящегося на вершине стека…
-                         … (если оператор o1 ассоциированный, либо лево-ассоциированный) приоритет o1 меньше либо равен приоритету оператора, находящегося на вершине стека…
-                           1.1 … выталкиваем верхний элемент стека в выходную строку;
-                         2) помещаем оператор o1 в стек.
-                    
-                        */
-
-
-            if (operatorValue.Associativity == OperatorAssociativity.Right)
+            if (operatorSignature.Associativity == OperatorAssociativity.Right)
             {
-                // TODO: Тут надо юзать Is NegatationNumberOperator 
-                if (operatorValue.Keys.First() == "-")
-                    Append("0");
+                Func<int, int, bool> breakOperatorPriorityPredicate = 
+                    (operatorPriority, stackOperatorPriority) => operatorPriority >= stackOperatorPriority;
 
-                //TODO: в метод
-                while (_Stack.Count > 0)
-                {
-                    var stackValue = _Stack.Peek();
-
-                    // если разделитель - прерываем выталкивание
-                    if (stackValue.In(TranslationConstantHelper.LeftBracketString,
-                        TranslationConstantHelper.DelitimerString))
-                        break;
-
-                    var stackOperatorPriority = GetOperatorPriorityByKey(stackValue);
-                    
-                    if (operatorValue.Priority >= stackOperatorPriority)
-                        break;
-
-                    Append(stackValue);
-                    _Stack.Pop();
-                }
+                ProcessOperatorWithStack(operatorSignature, breakOperatorPriorityPredicate);
             }
             else
             {
-                //TODO: в метод
-                while (_Stack.Count > 0)
-                {
-                    var stackValue = _Stack.Peek();
+                Func<int, int, bool> breakOperatorPriorityPredicate = 
+                    (operatorPriority, stackOperatorPriority) => operatorPriority > stackOperatorPriority;
 
-                    // если разделитель - прерываем выталкивание
-                    if (stackValue.In(TranslationConstantHelper.LeftBracketString,
-                        TranslationConstantHelper.DelitimerString))
-                        break;
-
-                    var stackOperatorPriority = GetOperatorPriorityByKey(stackValue);
-
-                    if (operatorValue.Priority > stackOperatorPriority)
-                        break;
-
-                    Append(stackValue);
-                    _Stack.Pop();
-                }
+                ProcessOperatorWithStack(operatorSignature, breakOperatorPriorityPredicate);
             }
+              
+            var operatorKey= operatorSignature.Keys.First();
 
-            var operatorKey= operatorValue.Keys.First();
-
-            _Stack.Push(operatorKey);
+            _Stack.Push(new PostfixConverterStackValue
+            {
+                StringValue = operatorKey,
+                OriginalValue = operatorSignature
+            });
 
             return operatorKey.Length;
         }
 
-
         /// <summary>
-        /// 
+        /// Выбрать оператор на основании ожидаемого типа оператора
         /// </summary>
-        /// <param name="operators"></param>
+        /// <param name="operators">Список операторов</param>
         /// <returns></returns>
         private IOperatorSignature SelectOperator(IEnumerable<IOperatorSignature> operators)
         {
             if (operators.Count() == 1)
                 return operators.First();
 
-
-            // TODO: здесь нужен анализ для типа -3 - -3, так как он воспринимает - - как --
-            // Видимо следует сначала определить, какой оператор мы потенциально ожидаем
-            // Если до этого ProcessedStringType.Unknown / ProcessedStringType.LeftBracket / ProcessedStringType.FunctionDelitimer / ProcessedStringType.Operator
-            // То будем смотреть только унарные операторы ( и унарный операторы надо преобразовывать в какую- то хуйню, которую )
-            
             if (_LastProcessedType.In(ProcessedStringType.Unknown,
                                       ProcessedStringType.LeftBracket,
-                                      ProcessedStringType.FunctionDelitimer,
+                                      ProcessedStringType.FunctionArgumentDelitimer,
                                       ProcessedStringType.Operator))
             {
                 return operators
@@ -381,54 +339,48 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                         .OrderByDescending(_ => _.Keys.First().Length)
                         .FirstOrDefault();
             }
-
-
-            /*TODO ТУТ ПЕРВОНАЧАЛЬНАЯ ВЕРСИЯ
-            // Выбираем операторы с максимально длинной сигнатурой
-            var matchedOperatorsWithMaxKey = operators.GroupBy(_ => _.Keys.First())
-                                                .OrderByDescending(_ => _.Key.Length)
-                                                .First()
-                                                .Select(_ => _)
-                                                .ToList();
- 
-            if (matchedOperatorsWithMaxKey.Count == 1)
-                return matchedOperatorsWithMaxKey.First();
-
-            // Если есть несколько операторов с одной сигнатурой (например бинарный "-" и унарный "-") 
-            // тогда выбираем в зависимости от предыдущего обработанного типа
-            if (_LastProcessedType.In(ProcessedStringType.Unknown,
-                                      ProcessedStringType.LeftBracket,
-                                      ProcessedStringType.FunctionDelitimer,
-                                      ProcessedStringType.Operator))
-                return matchedOperatorsWithMaxKey.Where(_ => _.OperatorType == OperatorType.Unary).FirstOrDefault();
-            else
-                return matchedOperatorsWithMaxKey.Where(_ => _.OperatorType != OperatorType.Unary).FirstOrDefault();
-            */
         }
 
-
-
         /// <summary>
-        /// 
+        /// Получить подходящую сигнатуру функции
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
+        /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
         /// <returns></returns>
-        private int ProcessOperatorOrFunction(char chr, int charIndex, string stringForSearch)
+        private IFunctionSignature GetMatchedFunctionSignature(string stringForSearch)
         {
-            int processedLength = 0;
-
-            // ФУНКЦИЯ
-            //Если символ является символом функции, помещаем его в стек (тут сравниваем с сигнатурой).
-            // выбираем наиболее подходящую функцию
-            var matchedFunction = _Signatures.OfType<IFunctionSignature>()
+            return _Signatures.OfType<IFunctionSignature>()
                                         .Where(_ => _.Match(stringForSearch))
                                         .OrderByDescending(_ => _.Keys.First().Length)
                                         .FirstOrDefault();
+        }
 
-            var matchedOperators = _Signatures.OfType<IOperatorSignature>()
-                                        .Where(_ =>_.Match(stringForSearch))
+        /// <summary>
+        /// Получить подходящие сигнатуры операторов
+        /// </summary>
+        /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
+        /// <returns></returns>
+        private List<IOperatorSignature> GetMatchedOperatorSignatures(string stringForSearch)
+        {
+            return _Signatures.OfType<IOperatorSignature>()
+                                        .Where(_ => _.Match(stringForSearch))
                                         .ToList();
+        }
+
+        /// <summary>
+        /// Обработать оператор или функцию и вернуть длину ее сигнатуры
+        /// </summary>
+        /// <param name="chr">Символ начала сигнатуры оператора или функции</param>
+        /// <param name="charIndex">Индекс символа в оригинальной строке</param>
+        /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
+        /// <returns></returns>
+        private int ProcessOperatorOrFunction(char chr, int charIndex)
+        {
+            var stringForSearch = _InputString.Substring(charIndex);
+            int processedLength = 0;
+
+            var matchedFunction = GetMatchedFunctionSignature(stringForSearch);
+
+            var matchedOperators = GetMatchedOperatorSignatures(stringForSearch);
 
             if (matchedFunction != null)
             {
@@ -453,15 +405,13 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
             return processedLength;
         }
 
-  
-
         /// <summary>
-        /// 
+        /// Преобразовать строку, содержащюю выражение в инфиксной форме в постфиксную форму 
         /// </summary>
         /// <returns></returns>
         public string Convert()
         {
-            _Stack = new Stack<string>();
+            _Stack = new Stack<PostfixConverterStackValue>();
             _StringBuilder = new StringBuilder();
             _LastProcessedType = ProcessedStringType.Unknown;
 
@@ -477,25 +427,22 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                     ProcessLeftBracket(chr, index);
                     index++;
                 }
-                //Если символ - закрывающая скобка: До тех пор, пока верхним элементом стека не станет открывающая скобка,
-                //выталкиваем элементы из стека в выходную строку. При этом открывающая скобка удаляется из стека, но в выходную строку не добавляется. 
-                //Если стек закончился раньше, чем мы встретили открывающую скобку, это означает, 
-                //что в выражении либо неверно поставлен разделитель, либо не согласованы скобки.
+                // TODO: проверить, что кидается исключение при несогласованных скобках
                 else if (chr == TranslationConstantHelper.RightBracket)
                 {
                     ProcessRightBracket(chr, index);
                     index++;
                 }
-                // TODO: надо добавить еще обработку запятых (разделителей в функции)
-
-                //Если символ является числом, добавляем его к выходной строке до тех пор, пока не встретим что-то, что не является числом
+                else if (chr == TranslationConstantHelper.FunctionArgumentDelitimer)
+                {
+                    ProcessArgumentDelitimer(chr, index);
+                    index++;
+                }
                 else if (IsDigit(chr))
                 {
                     int numberStringLength = ProcessNumberAndGetLength(chr, index);
                     index += numberStringLength;
                 }
-                // ПЕРЕМЕННАЯ
-                // Если символ является признаком начала переменной - добавляем ее к выходной строке
                 else if (chr == TranslationConstantHelper.VariableStart)
                 {
                     int numberStringLength = ProcessVariableAndGetLength(chr, index);
@@ -504,15 +451,17 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 }
                 else
                 {
-                    var leftTrimedString = _InputString.Substring(index);
-                    var signatureLength = ProcessOperatorOrFunction(chr, index, leftTrimedString);
+                    var signatureLength = ProcessOperatorOrFunction(chr, index);
                     index += signatureLength;
                 }
             }
 
-            //когда входная строка закончилась, выталкиваем все символы из стека в выходную строку.В стеке должны были остаться только символы операторов; если это не так, значит в выражении не согласованы скобки.
+            //когда входная строка закончилась, выталкиваем все символы из стека в выходную строку.
+            //В стеке должны были остаться только символы операторов; если это не так, значит в выражении не согласованы скобки.
+
+            // TODO: проверить, есть ли там не операторы (подумать, что функциями)
             while (_Stack.Count > 0)
-                Append(_Stack.Pop());
+                AppendToOutputStringBuilder(_Stack.Pop().StringValue);
      
             return GetResult();
         }
@@ -523,33 +472,5 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
             _Signatures = signatures;
             _Delitimer = delitimer;
         }
-
-
-
     }
 }
-
-
-
-/*
- * Если элемент является константой или переменной, добавляем его к результирующей строке.
-
-  4. Если элемент является разделителем аргументов функции (запятая), то выталкиваем элементы из стека
-     в выходную строку до тех пор, пока верхним элементом стека не станет открывающаяся скобка.
-     Если открывающаяся скобка не встретилась, это означает, что в выражении либо неверно поставлен
-     разделитель, либо несогласованы скобки.
-  5. Если элемент является одной из зарегистрированных сигнатур[*], то:
-     - Если элемент соответствует сигнатуре унарного оператора и этот элемент - первый после начала выражения
-       (либо начало входной последовательности, либо сразу после открывающей скобки), мы интерпретируем его как
-       унарный оператор и заносим в стек в соответствии с его приоритетом и ассоциативностью[**]. Далее
-       осуществляется незамедлительный переход к обработке следующего эл-та (continue).
-     - Если элемент соответствует сигнатуре бинарного оператора, то заносим его в стек в соответствии с его
-       приоритетом и ассоциативностью. Далее осуществляется незамедлительный переход к обработке следующего эл-та (continue).
-     - Если элемент соответствует сигнатуре одной из составных частей оператора, принимающего 3 или более
-       операндов, то определяем номер этой составной части (для двоеточия в тернарном операторе ?: это будет
-       номер 1, для знака вопроса - номер 2). Если номер равен 1, то заносим его в стек в соответствии с его приоритетом
-       и ассоциативностью[**]. Если номер больше 1, то выталкиваем в результирующее выражение все элементы,
-       пока не найдем составную часть с предыдущим номером.
-       Если оказывается, что обработанный таким способом элемент замыкает сигнатуру оператора, то соединяем в стеке
-       его части в один логический оператор. Если предыдущий не найден - синтаксическая ошибка.
-*/

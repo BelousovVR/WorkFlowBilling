@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyRef.cs" />
+    <Compile Include="Converters\PostfixConverterProccessHelper.cs" />
+    <Compile Include="Converters\PostfixConverterStackValue.cs" />
     <Compile Include="Converters\ProcessedStringType.cs" />
     <Compile Include="Helpers\TranslationConstantHelper.cs" />
     <Compile Include="Operators\AdditionOperator.cs" />

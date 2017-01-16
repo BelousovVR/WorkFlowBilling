@@ -14,7 +14,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         Number,
 
         [Description("Разделитель параметров функции")]
-        FunctionDelitimer,
+        FunctionArgumentDelitimer,
 
         [Description("Открывающая скобка")]
         LeftBracket,
