@@ -46,6 +46,8 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\CultureInfoHelper.cs" />
+    <Compile Include="Interfaces\IGenericMatchable.cs" />
+    <Compile Include="Interfaces\IInputOutputGenericMatchable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using WorkFlowBilling.IoC.Attributes;
+﻿using WorkFlowBilling.Common.Interfaces;
+using WorkFlowBilling.IoC.Attributes;
 
 namespace WorkFlowBilling.Compiler.Signatures
 {
@@ -6,15 +7,8 @@ namespace WorkFlowBilling.Compiler.Signatures
     /// Интерфейс сигнатуры
     /// </summary>
     [AutoInjectable] 
-    public interface ISignature
+    public interface ISignature : IInputOutputGenericMatchable<string, SignatureMatchInfo>
     {
-        /// <summary>
-        /// Вернуть информацию о совпадении сигнатуры, если подстрока содержит символ/символы сигнатуры
-        /// </summary>
-        /// <param name="inputString">Подстрока, начинающаяся с символа оператора</param>
-        /// <returns></returns>
-        SignatureMatchInfo Match(string inputString);
-
         /// <summary>
         /// Ключи сигнатуры
         /// </summary>
