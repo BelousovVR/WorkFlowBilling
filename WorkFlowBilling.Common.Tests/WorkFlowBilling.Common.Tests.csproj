@@ -54,6 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Extensions\ArrayExtensionsTests.cs" />
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Extensions\ObjectExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />

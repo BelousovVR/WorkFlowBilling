@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using WorkFlowBilling.Common.Extensions;
 using WorkFlowBilling.Common.Helpers;
 using WorkFlowBilling.Compiler.Exceptions;
 using WorkFlowBilling.Compiler.Functions;
 using WorkFlowBilling.Compiler.Impl.Helpers;
-using WorkFlowBilling.Compiler.Impl.Operators;
+using WorkFlowBilling.Compiler.Impl.Signatures.Operators;
 using WorkFlowBilling.Compiler.Operators;
 using WorkFlowBilling.Compiler.Signatures;
 using static System.Char;
@@ -40,7 +39,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// Добавить строковое значение к выходной строке
         /// </summary>
         /// <param name="value"></param>
-        private void AppendToOutputStringBuilder(string value)
+        private void AppendToOutput(string value)
         {
             _StringBuilder.Append($"{value}{_Delitimer}");
         }
@@ -99,7 +98,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                     break;
                 }
                 else
-                    AppendToOutputStringBuilder(stackStringValue);
+                    AppendToOutput(stackStringValue);
             }
 
             if (!isLeftBracketFinded)
@@ -113,7 +112,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 if (matchedFunction != null)
                 {
                     _Stack.Pop();
-                    AppendToOutputStringBuilder(stackTopStringValue);
+                    AppendToOutput(stackTopStringValue);
                 }
             }
 
@@ -143,7 +142,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 }
                 else
                 {
-                    AppendToOutputStringBuilder(stackStringValue);
+                    AppendToOutput(stackStringValue);
                     _Stack.Pop();
                 }
             }
@@ -175,7 +174,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             var numberString = number.ToString(_CultureInfo);
 
-            AppendToOutputStringBuilder(numberString);
+            AppendToOutput(numberString);
             _LastProcessedType = ProcessedStringType.Number;
 
             return numberString.Length;
@@ -200,7 +199,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
 
             var variableStr = _InputString.Substring(charIndex, variableEndIndex + 1);
 
-            AppendToOutputStringBuilder(variableStr);
+            AppendToOutput(variableStr);
 
             _LastProcessedType = ProcessedStringType.Variable;
 
@@ -212,15 +211,22 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// </summary>
         /// <param name="chr">Символ начала сигнатуры функции</param>
         /// <param name="charIndex">Индекс символа в оригинальной строке</param>
-        private int ProcessFunctionAndGetLength(char chr, int charIndex, ISignature function)
+        /// <param name="functionSignature">Сигнатура функции</param>
+        private int ProcessFunctionAndGetLength(char chr, int charIndex, IFunctionSignature functionSignature)
         {
             var processAlowed = CheckFunctionProcessAllowed(_LastProcessedType);
             if (!processAlowed)
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} обнаружен неожиданный символ '{chr}'");
 
-            var funcKey = function.Keys.First();
+            var funcKey = functionSignature.Keys.First();
 
-            AppendToOutputStringBuilder(funcKey);
+            _Stack.Push(new PostfixConverterStackValue
+            {
+                StringValue = funcKey,
+                OriginalValue = functionSignature
+            });
+
+            _LastProcessedType = ProcessedStringType.Function;
 
             return funcKey.Length;
         }
@@ -248,7 +254,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <param name="breakOperatorPriorityPredicate">Функция сравнения приоритетов операторов, 
         /// при которой выталкивание из стэка должно завершиться
         /// </param>
-        private void ProcessOperatorWithStack(IOperatorSignature operatorSignature, Func<int, int, bool> breakOperatorPriorityPredicate)
+        private void AppendOperatorsToOutput(IOperatorSignature operatorSignature, Func<int, int, bool> breakOperatorPriorityPredicate)
         {
             while (_Stack.Count > 0)
             {
@@ -265,8 +271,80 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 if (breakOperatorPriorityPredicate(operatorSignature.Priority, stackOperatorPriority))
                     break;
 
-                AppendToOutputStringBuilder(stackStringValue);
+                AppendToOutput(stackStringValue);
                 _Stack.Pop();
+            }
+        }
+
+        /// <summary>
+        /// Обработать оператор в зависимости от его ассоциативности
+        /// </summary>
+        /// <param name="operatorSignature">Сигнатура оператора</param>
+        /// <param name="matchedKey">Ключ совпавшей сигнатуры</param>
+        private void ProccessOperatorByAssociativity(IOperatorSignature operatorSignature, string matchedKey)
+        {
+            if (operatorSignature.Associativity == OperatorAssociativity.Right)
+            {
+                Func<int, int, bool> breakOperatorPriorityPredicate =
+                    (operatorPriority, stackOperatorPriority) => operatorPriority >= stackOperatorPriority;
+
+                AppendOperatorsToOutput(operatorSignature, breakOperatorPriorityPredicate);
+            }
+            else
+            {
+                Func<int, int, bool> breakOperatorPriorityPredicate =
+                    (operatorPriority, stackOperatorPriority) => operatorPriority > stackOperatorPriority;
+
+                AppendOperatorsToOutput(operatorSignature, breakOperatorPriorityPredicate);
+            }
+
+            _Stack.Push(new PostfixConverterStackValue
+            {
+                StringValue = matchedKey,
+                OriginalValue = operatorSignature
+            });
+        }
+
+        /// <summary>
+        /// Обработать составной оператор
+        /// </summary>
+        /// <param name="operatorSignature">Сигнатура оператора</param>
+        /// <param name="operatorKey">Совпавший ключ оператора</param>
+        /// <param name="matchedIndex">Индекс совпавшего ключа оператора</param>
+        private void ProcessCompositeOperator(IOperatorSignature operatorSignature, string operatorKey, int matchedIndex)
+        {
+            if (matchedIndex == 0)
+            {
+                ProccessOperatorByAssociativity(operatorSignature, operatorKey);
+            }
+            else
+            {
+                var isOperatorPartFinded = false;
+                var operatorFirstPart = operatorSignature.Keys.First();
+
+                while (_Stack.Count > 0)
+                {
+                    var stackValue = _Stack.Peek();
+
+                    var stackOperatorSignature = stackValue.OriginalValue as IOperatorSignature;
+
+                    if (stackOperatorSignature != null
+                        && stackOperatorSignature.GetType() == operatorSignature.GetType()
+                        && operatorFirstPart == stackValue.StringValue)
+                    {
+                        isOperatorPartFinded = true;
+                        stackValue.StringValue = stackValue.StringValue + stackOperatorSignature.Keys[1];
+                        break;
+                    }
+                    else
+                    {
+                        AppendToOutput(stackValue.StringValue);
+                        _Stack.Pop();
+                    }
+                }
+
+                if (!isOperatorPartFinded)
+                    throw new StringConvertationException($"Не обнаружена составная часть оператора: {operatorFirstPart}");
             }
         }
 
@@ -277,38 +355,31 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <param name="charIndex"></param>
         /// <param name="operators"></param>
         /// <returns></returns>
-        private int ProcessOperatorAndGetLength(char chr, int charIndex, IOperatorSignature operatorSignature)
+        private int ProcessOperatorAndGetLength(char chr, int charIndex, SignatureMatchInfo signatureMatchInfo)
         {
             var processAlowed = CheckOperatorProcessAllowed(_LastProcessedType);
             if (!processAlowed)
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} обнаружен неожиданный символ '{chr}'");
 
+            var operatorSignature = signatureMatchInfo.MatchedSignature as IOperatorSignature;
+
             // если это оператор минус (число), то преобразовываем строку в (0 - число)
             if (operatorSignature is NegatationNumberOperator)
-                AppendToOutputStringBuilder("0");
+                AppendToOutput("0");
 
-            if (operatorSignature.Associativity == OperatorAssociativity.Right)
+            var operatorKey = signatureMatchInfo.MatchedKey;
+
+            if (operatorSignature.OperatorType.In(OperatorType.Unary, OperatorType.Binary))
             {
-                Func<int, int, bool> breakOperatorPriorityPredicate = 
-                    (operatorPriority, stackOperatorPriority) => operatorPriority >= stackOperatorPriority;
-
-                ProcessOperatorWithStack(operatorSignature, breakOperatorPriorityPredicate);
+                ProccessOperatorByAssociativity(operatorSignature, operatorKey);
             }
             else
             {
-                Func<int, int, bool> breakOperatorPriorityPredicate = 
-                    (operatorPriority, stackOperatorPriority) => operatorPriority > stackOperatorPriority;
-
-                ProcessOperatorWithStack(operatorSignature, breakOperatorPriorityPredicate);
+                var matchedIndex = signatureMatchInfo.MatchedKeyIndex;
+                ProcessCompositeOperator(operatorSignature, operatorKey, matchedIndex);
             }
-              
-            var operatorKey= operatorSignature.Keys.First();
 
-            _Stack.Push(new PostfixConverterStackValue
-            {
-                StringValue = operatorKey,
-                OriginalValue = operatorSignature
-            });
+            _LastProcessedType = ProcessedStringType.Operator;
 
             return operatorKey.Length;
         }
@@ -316,28 +387,29 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <summary>
         /// Выбрать оператор на основании ожидаемого типа оператора
         /// </summary>
-        /// <param name="operators">Список операторов</param>
+        /// <param name="operatorsSignatureMatchInfo">Список операторов</param>
         /// <returns></returns>
-        private IOperatorSignature SelectOperator(IEnumerable<IOperatorSignature> operators)
+        private SignatureMatchInfo SelectOperatorMatchInfo(IEnumerable<SignatureMatchInfo> signatureMatchInfo)
         {
-            if (operators.Count() == 1)
-                return operators.First();
+            if (signatureMatchInfo.Count() == 1)
+                return signatureMatchInfo.First();
 
             if (_LastProcessedType.In(ProcessedStringType.Unknown,
                                       ProcessedStringType.LeftBracket,
                                       ProcessedStringType.FunctionArgumentDelitimer,
                                       ProcessedStringType.Operator))
             {
-                return operators
-                        .Where(_ => _.OperatorType == OperatorType.Unary)
-                        .OrderByDescending(_ => _.Keys.First().Length)
+                return signatureMatchInfo
+                        .Where(_ =>  (_.MatchedSignature as IOperatorSignature).OperatorType == OperatorType.Unary)
+                        .OrderByDescending(_ => _.MatchedKey.Length)
                         .FirstOrDefault();
-            } else
+            }
+            else
             {
-                return operators
-                        .Where(_ => _.OperatorType != OperatorType.Unary)
-                        .OrderByDescending(_ => _.Keys.First().Length)
-                        .FirstOrDefault();
+                return signatureMatchInfo
+                    .Where(_ => (_.MatchedSignature as IOperatorSignature).OperatorType != OperatorType.Unary)
+                    .OrderByDescending(_ => _.MatchedKey.Length)
+                    .FirstOrDefault();
             }
         }
 
@@ -348,21 +420,24 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <returns></returns>
         private IFunctionSignature GetMatchedFunctionSignature(string stringForSearch)
         {
-            return _Signatures.OfType<IFunctionSignature>()
-                                        .Where(_ => _.Match(stringForSearch))
-                                        .OrderByDescending(_ => _.Keys.First().Length)
+             return _Signatures.OfType<IFunctionSignature>()
+                                        .Select(_ =>  _.Match(stringForSearch))
+                                        .Where(_ => _.IsMatched)
+                                        .OrderByDescending(_ => _.MatchedKey.Length)
+                                        .Select(_ => _.MatchedSignature as IFunctionSignature)
                                         .FirstOrDefault();
         }
 
         /// <summary>
-        /// Получить подходящие сигнатуры операторов
+        /// Получить подходящие сигнатуры операторов и информацию о совпадении
         /// </summary>
         /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
         /// <returns></returns>
-        private List<IOperatorSignature> GetMatchedOperatorSignatures(string stringForSearch)
+        private List<SignatureMatchInfo> GetOperatorSignatureMatchInfo(string stringForSearch)
         {
             return _Signatures.OfType<IOperatorSignature>()
-                                        .Where(_ => _.Match(stringForSearch))
+                                        .Select(_ => _.Match(stringForSearch))
+                                        .Where(_ => _.IsMatched)
                                         .ToList();
         }
 
@@ -379,23 +454,16 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
             int processedLength = 0;
 
             var matchedFunction = GetMatchedFunctionSignature(stringForSearch);
-
-            var matchedOperators = GetMatchedOperatorSignatures(stringForSearch);
+            var matchedOperatorsInfo = GetOperatorSignatureMatchInfo(stringForSearch);
 
             if (matchedFunction != null)
             {
                 processedLength = ProcessFunctionAndGetLength(chr, charIndex, matchedFunction);
-                _LastProcessedType = ProcessedStringType.Function;
             }
-            else if (matchedOperators.Count != 0)
+            else if (matchedOperatorsInfo.Count != 0)
             {
-                var operatorSignature = SelectOperator(matchedOperators);
-
-                if (operatorSignature == null)
-                    throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} не удалось определить оператор");
-
-                processedLength = ProcessOperatorAndGetLength(chr, charIndex, operatorSignature);
-                _LastProcessedType = ProcessedStringType.Operator;
+                var operatorSignatureInfo = SelectOperatorMatchInfo(matchedOperatorsInfo);
+                processedLength = ProcessOperatorAndGetLength(chr, charIndex, operatorSignatureInfo);
             }
             else
             {
@@ -403,6 +471,24 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
             }
 
             return processedLength;
+        }
+
+        /// <summary>
+        /// Добавить оставшиеся значения из стэка в выходную строку
+        /// </summary>
+        private void ProcessRemainingStackValues()
+        {
+            while (_Stack.Count > 0)
+            {
+                var stackValue = _Stack.Pop();
+
+                var matchedSignature = stackValue.OriginalValue as ISignature;
+
+                if (matchedSignature == null)
+                    throw new StringConvertationException("В выражении несогласованны скобки");
+
+                AppendToOutput(stackValue.StringValue);
+            };
         }
 
         /// <summary>
@@ -421,13 +507,11 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 //Читаем очередной символ
                 var chr = _InputString[index];
 
-                //Если символ является открывающей скобкой, помещаем его в стек.
                 if (chr == TranslationConstantHelper.LeftBracket)
                 {
                     ProcessLeftBracket(chr, index);
                     index++;
                 }
-                // TODO: проверить, что кидается исключение при несогласованных скобках
                 else if (chr == TranslationConstantHelper.RightBracket)
                 {
                     ProcessRightBracket(chr, index);
@@ -456,13 +540,8 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 }
             }
 
-            //когда входная строка закончилась, выталкиваем все символы из стека в выходную строку.
-            //В стеке должны были остаться только символы операторов; если это не так, значит в выражении не согласованы скобки.
+            ProcessRemainingStackValues();
 
-            // TODO: проверить, есть ли там не операторы (подумать, что функциями)
-            while (_Stack.Count > 0)
-                AppendToOutputStringBuilder(_Stack.Pop().StringValue);
-     
             return GetResult();
         }
 
@@ -474,3 +553,4 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         }
     }
 }
+ 

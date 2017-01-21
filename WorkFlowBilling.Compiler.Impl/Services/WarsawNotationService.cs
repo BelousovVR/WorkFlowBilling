@@ -13,6 +13,9 @@ namespace WorkFlowBilling.Compiler.Impl.Services
     {
         private readonly string _Delitimer = TranslationConstantHelper.ElementsDelitimer;
 
+        /// <summary>
+        /// Сигнатуры операторов / функций
+        /// </summary>
         public IEnumerable<ISignature> Signatures { get; set; }
 
         /// <summary>
@@ -22,7 +25,8 @@ namespace WorkFlowBilling.Compiler.Impl.Services
         /// <returns></returns>
         public string ConvertToPostfixString(string infixString)
         {
-            return new PostfixConverter(infixString, _Delitimer, Signatures).Convert();
+            var postfixConverter = new PostfixConverter(infixString, _Delitimer, Signatures);
+            return postfixConverter.Convert();
         }
     }
 }

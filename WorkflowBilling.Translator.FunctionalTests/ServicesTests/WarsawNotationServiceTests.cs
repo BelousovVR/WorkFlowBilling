@@ -1,27 +1,22 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorkFlowBilling.Compiler.Services;
 using WorkFlowBilling.TestFramework.Common;
-using WorkFlowBilling.Compiler.Impl.Services;
-using WorkFlowBilling.Translator.Impl;
 using WorkFlowBilling.Compiler.Exceptions;
 using WorkflowBilling.Translator.FunctionalTests.Common;
 
 namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
 {
     /// <summary>
-    /// 
+    /// Тесты на сервис обратной польской записи
     /// </summary>
     [TestFixture]
     public class WarsawNotationServiceTests : BaseFunctionalTest
     {
 
         /// <summary>
-        /// 
+        /// Исходные данные об инфиксной записи выражения и постфиксном ожидаемом выражении
         /// </summary>
         private static List<StringConvertTestData> PostfixConvertationData = new List<StringConvertTestData>()
         {
@@ -37,7 +32,6 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
             new StringConvertTestData("(4-2) * 2", "4 2 - 2 *"),
             new StringConvertTestData("10 + 5 * 2", "10 5 2 * +"),
             new StringConvertTestData("(4+5)*7-(3/2+15)", "4 5 + 7 * 3 2 / 15 + -"),
-            new StringConvertTestData("{x} + 5 * 2", "{x} 5 2 * +"),
             new StringConvertTestData("(0-3) - (0-3)", "0 3 - 0 3 - -"),
             new StringConvertTestData("-3 + -(8*2)", "0 3 - 0 8 2 * - +"),
             new StringConvertTestData("3 + -3", "3 0 3 - +"),
@@ -56,6 +50,7 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
 
             // TODO: Тесты на переменные
             new StringConvertTestData("{Variable}", "{Variable}"),
+            new StringConvertTestData("{x} + 5 * 2", "{x} 5 2 * +"),
 
             //TODO: дописать Тесты на логические операторы
             new StringConvertTestData("5 != 3 ", "5 3 !="),
@@ -68,9 +63,19 @@ namespace WorkflowBilling.Translator.FunctionalTests.ServicesTests
             new StringConvertTestData("!(2 > 0) && 3 < 5", "2 0 > ! 3 5 < &&"),
             new StringConvertTestData("2 > 2 + 0 && 3 < 5", "2 2 0 + > 3 5 < &&"),
 
-            //TODO: тесты на функции
+            //TODO: дописать тесты на функции
+            new StringConvertTestData("Max(1,2) ", "1 2 Max"),
+            new StringConvertTestData("Max(1 + 2 , 2 * 3) ", "1 2 + 2 3 * Max"),
+            new StringConvertTestData("Max( 3 * (2-5) , -3) ", "3 2 5 - * 0 3 - Max"),
+            new StringConvertTestData("Max(Max(1,3) , Max(2,4))", "1 3 Max 2 4 Max Max"),
+            new StringConvertTestData("5 + Max(1,2) ", "5 1 2 Max +"),
+            new StringConvertTestData("Max(1,2) - 5 ", "1 2 Max 5 -"),
 
 
+            // TODO: дописать тесты на тернарный оператор
+            new StringConvertTestData("2 > 3 ? 4 : 5", "2 3 > 4 5 ?:"),
+            new StringConvertTestData("2 > 3 ? 4 + 5 : 6 + 7", "2 3 > 4 5 + 6 7 + ?:"),
+            new StringConvertTestData("2 > 3 ? Max(1,0) + 5 : 6 + 7", "2 3 > 1 0 Max 5 + 6 7 + ?:"),
         };
 
         /// <summary>
