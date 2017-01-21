@@ -37,5 +37,47 @@ namespace WorkFlowBilling.Common.Tests
             //THEN
             Assert.AreEqual(awaitedList, outputList);
         }
+
+        [Test]
+        public void EnumerableExtensions_IsNullOrEmpty_NotEmptyArray()
+        {
+            //GIVEN
+            var array = new [] { 1, 2, 3};
+            var awaitedResult = false;
+
+            //GIVEN
+            var result = array.IsNullOrEmpty();
+
+            //THEN
+            Assert.AreEqual(awaitedResult, result);
+        }
+
+        [Test]
+        public void EnumerableExtensions_IsNullOrEmpty_EmptyArray()
+        {
+            //GIVEN
+            var array = new int[0];
+            var awaitedResult = true;
+
+            //GIVEN
+            var result = array.IsNullOrEmpty();
+
+            //THEN
+            Assert.AreEqual(awaitedResult, result);
+        }
+
+        [Test]
+        public void EnumerableExtensions_IsNullOrEmpty_NullEnumerable()
+        {
+            //GIVEN
+            IEnumerable<int> enumerable = null;
+            var awaitedResult = true;
+
+            //GIVEN
+            var result = enumerable.IsNullOrEmpty();
+
+            //THEN
+            Assert.AreEqual(awaitedResult, result);
+        }
     }
 }

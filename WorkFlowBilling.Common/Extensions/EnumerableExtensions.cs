@@ -19,5 +19,27 @@ namespace WorkFlowBilling.Common.Extensions
             foreach (var item in enumerable)
                 action(item);
         }
+
+        /// <summary>
+        /// Проверить последовательность на null и существование элементов
+        /// </summary>
+        /// <typeparam name="T">Тип членов Enumerable</typeparam>
+        /// <param name="enumerable">Enumerable</param>
+        /// <returns></returns>
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+                return true;
+
+            var itemsExists = false;
+
+            foreach (var item in enumerable)
+            {
+                itemsExists = true;
+                break;
+            }
+
+            return !itemsExists;
+        }
     }
 }
