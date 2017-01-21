@@ -2,18 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор "меньше" (<)
+    /// Оператор вычитания
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class LessThanOperator : OperatorBase
+    public class SubstractionOperator : OperatorBase
     {
-        public LessThanOperator()
+        public SubstractionOperator()
         {
-            Keys = new[] { "<" };
-            Priority = 10;
+            Keys = new[] { "-" };
+            Priority = 12;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;
         }

@@ -2,17 +2,17 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор деления
+    /// Оператор умножения
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class DivisionOperator : OperatorBase
+    public class MultiplicationOperator : OperatorBase
     {
-        public DivisionOperator()
+        public MultiplicationOperator()
         {
-            Keys = new[] { "/" };
+            Keys = new[] { "*" };
             Priority = 13;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using WorkFlowBilling.Compiler.Impl.Operators;
+using WorkFlowBilling.Compiler.Impl.Signatures.Operators;
 using WorkFlowBilling.Compiler.Operators;
 
 namespace WorkFlowBilling.Compiler.Tests

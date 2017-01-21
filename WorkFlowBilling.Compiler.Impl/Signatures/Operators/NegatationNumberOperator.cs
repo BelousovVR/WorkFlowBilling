@@ -2,18 +2,17 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Префиксный оператора уменьшения
-    /// --(5 + 6) <=>  (5 + 6) - 1
+    /// Оператор отрицания для числовых значений
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class PrefixDecrementOperator : OperatorBase
+    class NegatationNumberOperator : OperatorBase
     {
-        public PrefixDecrementOperator()
+        public NegatationNumberOperator()
         {
-            Keys = new[] { "--" };
+            Keys = new[] { "-" };
             Priority = 14;
             OperatorType = OperatorType.Unary;
             Associativity = OperatorAssociativity.Right;

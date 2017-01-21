@@ -2,18 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор вычитания
+    /// Оператор "равно" (==)
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class SubstractionOperator : OperatorBase
+    public class EqualityOperator : OperatorBase
     {
-        public SubstractionOperator()
+        public EqualityOperator()
         {
-            Keys = new[] { "-" };
-            Priority = 12;
+            Keys = new[] { "==" };
+            Priority = 9;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;
         }

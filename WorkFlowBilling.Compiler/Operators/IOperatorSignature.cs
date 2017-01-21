@@ -1,10 +1,12 @@
 ﻿using WorkFlowBilling.Compiler.Signatures;
+using WorkFlowBilling.IoC.Attributes;
 
 namespace WorkFlowBilling.Compiler.Operators
 {
     /// <summary>
     /// Базовый интерфейс оператора
     /// </summary>
+    [AutoInjectable]
     public interface IOperatorSignature : ISignature
     {
         /// <summary>
@@ -16,5 +18,10 @@ namespace WorkFlowBilling.Compiler.Operators
         /// Тип оператора
         /// </summary>
         OperatorType OperatorType { get; }
+
+        /// <summary>
+        /// Приоритет
+        /// </summary>
+        int Priority { get; }
     }
 }

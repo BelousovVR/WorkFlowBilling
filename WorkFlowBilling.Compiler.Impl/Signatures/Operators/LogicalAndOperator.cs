@@ -2,18 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор умножения
+    /// Оператор "логическое И" (конъюнкция)
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class MultiplicationOperator : OperatorBase
+    public class LogicalAndOperator : OperatorBase
     {
-        public MultiplicationOperator()
+        public LogicalAndOperator()
         {
-            Keys = new[] { "*" };
-            Priority = 13;
+            Keys = new[] { "&&" };
+            Priority = 5;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;
         }

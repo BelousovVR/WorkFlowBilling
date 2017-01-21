@@ -1,9 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WorkFlowBilling.Compiler.Impl.Operators;
 using WorkFlowBilling.Compiler.Operators;
 
 namespace WorkFlowBilling.Compiler.Tests.OperatorsTests
@@ -56,7 +53,7 @@ namespace WorkFlowBilling.Compiler.Tests.OperatorsTests
             string inputString = null;
 
             //WHEN
-            var isMatched = operatorObj.Match(inputString);
+            var isMatched = operatorObj.Match(inputString).IsMatched;
 
             //THEN
             Assert.AreEqual(false, isMatched);
@@ -66,11 +63,10 @@ namespace WorkFlowBilling.Compiler.Tests.OperatorsTests
         public void Operators_Match(IOperatorSignature operatorObj, string operatorKey)
         {
             //WHEN
-            var isMatched = operatorObj.Match(operatorKey);
+            var isMatched = operatorObj.Match(operatorKey).IsMatched;
 
             //THEN
             Assert.AreEqual(true, isMatched);
         }
-
     }
 }

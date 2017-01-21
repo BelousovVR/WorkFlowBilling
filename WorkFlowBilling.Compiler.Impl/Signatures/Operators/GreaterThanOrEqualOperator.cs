@@ -2,18 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор сложения
+    /// Оператор "больше или равно" (>=)
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class AdditionOperator : OperatorBase
+    public class GreaterThanOrEqualOperator : OperatorBase
     {
-        public AdditionOperator()
+        public GreaterThanOrEqualOperator()
         {
-            Keys = new[] { "+" };
-            Priority = 12;
+            Keys = new[] { ">=" };
+            Priority = 10;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;
         }

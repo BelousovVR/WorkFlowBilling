@@ -2,15 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
-    //TODO TESTS
+    /// <summary>
+    /// Префиксный оператора увеличения
+    /// ++(5 + 6) <=> 1 + (5 + 6)
+    /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    class NegatationNumberOperator : OperatorBase
+    public class PrefixIncrementOperator : OperatorBase
     {
-        public NegatationNumberOperator()
+        public PrefixIncrementOperator()
         {
-            Keys = new[] { "-" };
+            Keys = new[] { "++" };
             Priority = 14;
             OperatorType = OperatorType.Unary;
             Associativity = OperatorAssociativity.Right;

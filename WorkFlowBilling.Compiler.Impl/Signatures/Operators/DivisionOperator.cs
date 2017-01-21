@@ -2,18 +2,18 @@
 using WorkFlowBilling.IoC.Attributes;
 using WorkFlowBilling.IoC.Enumerations;
 
-namespace WorkFlowBilling.Compiler.Impl.Operators
+namespace WorkFlowBilling.Compiler.Impl.Signatures.Operators
 {
     /// <summary>
-    /// Оператор "логическое ИЛИ" (дизъюнкция)
+    /// Оператор деления
     /// </summary>
     [AutoInjectableInstance(InstanceLifeTime.SingleInstance)]
-    public class LogicalOrOperator : OperatorBase
+    public class DivisionOperator : OperatorBase
     {
-        public LogicalOrOperator()
+        public DivisionOperator()
         {
-            Keys = new[] { "||" };
-            Priority = 4;
+            Keys = new[] { "/" };
+            Priority = 13;
             OperatorType = OperatorType.Binary;
             Associativity = OperatorAssociativity.Left;
         }

@@ -45,28 +45,31 @@
     <Compile Include="Converters\PostfixConverterProccessHelper.cs" />
     <Compile Include="Converters\PostfixConverterStackValue.cs" />
     <Compile Include="Converters\ProcessedStringType.cs" />
+    <Compile Include="Signatures\Functions\FunctionBase.cs" />
+    <Compile Include="Signatures\Functions\MaxFunction.cs" />
     <Compile Include="Helpers\TranslationConstantHelper.cs" />
-    <Compile Include="Operators\AdditionOperator.cs" />
-    <Compile Include="Operators\ConditionOperator.cs" />
-    <Compile Include="Operators\DivisionOperator.cs" />
-    <Compile Include="Operators\EqualityOperator.cs" />
-    <Compile Include="Operators\GreaterThanOrEqualOperator.cs" />
-    <Compile Include="Operators\InequalityOperator.cs" />
-    <Compile Include="Operators\LessThanOperator.cs" />
-    <Compile Include="Operators\GreaterThanOperator.cs" />
-    <Compile Include="Operators\LessThanOrEqualOperator.cs" />
-    <Compile Include="Operators\LogicalOrOperator.cs" />
-    <Compile Include="Operators\LogicalAndOperator.cs" />
-    <Compile Include="Operators\MultiplicationOperator.cs" />
-    <Compile Include="Operators\NegatationNumberOperator.cs" />
-    <Compile Include="Operators\NegationOperator.cs" />
-    <Compile Include="Operators\OperatorBase.cs" />
-    <Compile Include="Operators\PrefixDecrementOperator.cs" />
-    <Compile Include="Operators\PrefixIncrementOperator.cs" />
-    <Compile Include="Operators\SubstractionOperator.cs" />
+    <Compile Include="Signatures\Operators\AdditionOperator.cs" />
+    <Compile Include="Signatures\Operators\ConditionOperator.cs" />
+    <Compile Include="Signatures\Operators\DivisionOperator.cs" />
+    <Compile Include="Signatures\Operators\EqualityOperator.cs" />
+    <Compile Include="Signatures\Operators\GreaterThanOrEqualOperator.cs" />
+    <Compile Include="Signatures\Operators\InequalityOperator.cs" />
+    <Compile Include="Signatures\Operators\LessThanOperator.cs" />
+    <Compile Include="Signatures\Operators\GreaterThanOperator.cs" />
+    <Compile Include="Signatures\Operators\LessThanOrEqualOperator.cs" />
+    <Compile Include="Signatures\Operators\LogicalOrOperator.cs" />
+    <Compile Include="Signatures\Operators\LogicalAndOperator.cs" />
+    <Compile Include="Signatures\Operators\MultiplicationOperator.cs" />
+    <Compile Include="Signatures\Operators\NegatationNumberOperator.cs" />
+    <Compile Include="Signatures\Operators\NegationOperator.cs" />
+    <Compile Include="Signatures\Operators\OperatorBase.cs" />
+    <Compile Include="Signatures\Operators\PrefixDecrementOperator.cs" />
+    <Compile Include="Signatures\Operators\PrefixIncrementOperator.cs" />
+    <Compile Include="Signatures\Operators\SubstractionOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Converters\PostfixConverter.cs" />
     <Compile Include="Services\WarsawNotationService.cs" />
+    <Compile Include="Signatures\SignatureBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorkFlowBilling.Common\WorkFlowBilling.Common.csproj">
@@ -82,9 +85,7 @@
       <Name>WorkFlowBilling.IoC</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Functions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
