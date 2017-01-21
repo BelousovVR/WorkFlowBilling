@@ -351,9 +351,9 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <summary>
         /// Обработать оператор и получить его длину
         /// </summary>
-        /// <param name="chr"></param>
-        /// <param name="charIndex"></param>
-        /// <param name="operators"></param>
+        /// <param name="chr">Символ</param>
+        /// <param name="charIndex">Индекс символа в исходной строке</param>
+        /// <param name="signatureMatchInfo">Информация о совпадении оператора</param>
         /// <returns></returns>
         private int ProcessOperatorAndGetLength(char chr, int charIndex, SignatureMatchInfo signatureMatchInfo)
         {
@@ -387,26 +387,26 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <summary>
         /// Выбрать оператор на основании ожидаемого типа оператора
         /// </summary>
-        /// <param name="operatorsSignatureMatchInfo">Список операторов</param>
+        /// <param name="operatorsSignatureMatchInfo">Список информации о совпадающих операторов</param>
         /// <returns></returns>
-        private SignatureMatchInfo SelectOperatorMatchInfo(IEnumerable<SignatureMatchInfo> signatureMatchInfo)
+        private SignatureMatchInfo SelectOperatorMatchInfo(IEnumerable<SignatureMatchInfo> signatureMatchInfos)
         {
-            if (signatureMatchInfo.Count() == 1)
-                return signatureMatchInfo.First();
+            if (signatureMatchInfos.Count() == 1)
+                return signatureMatchInfos.First();
 
             if (_LastProcessedType.In(ProcessedStringType.Unknown,
                                       ProcessedStringType.LeftBracket,
                                       ProcessedStringType.FunctionArgumentDelitimer,
                                       ProcessedStringType.Operator))
             {
-                return signatureMatchInfo
+                return signatureMatchInfos
                         .Where(_ =>  (_.MatchedSignature as IOperatorSignature).OperatorType == OperatorType.Unary)
                         .OrderByDescending(_ => _.MatchedKey.Length)
                         .FirstOrDefault();
             }
             else
             {
-                return signatureMatchInfo
+                return signatureMatchInfos
                     .Where(_ => (_.MatchedSignature as IOperatorSignature).OperatorType != OperatorType.Unary)
                     .OrderByDescending(_ => _.MatchedKey.Length)
                     .FirstOrDefault();
@@ -433,7 +433,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// </summary>
         /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
         /// <returns></returns>
-        private List<SignatureMatchInfo> GetOperatorSignatureMatchInfo(string stringForSearch)
+        private List<SignatureMatchInfo> GetOperatorSignatureMatchInfos(string stringForSearch)
         {
             return _Signatures.OfType<IOperatorSignature>()
                                         .Select(_ => _.Match(stringForSearch))
@@ -448,29 +448,29 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// <param name="charIndex">Индекс символа в оригинальной строке</param>
         /// <param name="stringForSearch">Подстрока оригинальной строки, содержащяя сигнатуру оператора или функции</param>
         /// <returns></returns>
-        private int ProcessOperatorOrFunction(char chr, int charIndex)
+        private int ProcessOperatorOrFunctionAndGetLength(char chr, int charIndex)
         {
             var stringForSearch = _InputString.Substring(charIndex);
-            int processedLength = 0;
+            int signatureLength = 0;
 
-            var matchedFunction = GetMatchedFunctionSignature(stringForSearch);
-            var matchedOperatorsInfo = GetOperatorSignatureMatchInfo(stringForSearch);
+            var matchedFunctionSignature = GetMatchedFunctionSignature(stringForSearch);
+            var matchedOperatorsInfos = GetOperatorSignatureMatchInfos(stringForSearch);
 
-            if (matchedFunction != null)
+            if (matchedFunctionSignature != null)
             {
-                processedLength = ProcessFunctionAndGetLength(chr, charIndex, matchedFunction);
+                signatureLength = ProcessFunctionAndGetLength(chr, charIndex, matchedFunctionSignature);
             }
-            else if (matchedOperatorsInfo.Count != 0)
+            else if (matchedOperatorsInfos.Count != 0)
             {
-                var operatorSignatureInfo = SelectOperatorMatchInfo(matchedOperatorsInfo);
-                processedLength = ProcessOperatorAndGetLength(chr, charIndex, operatorSignatureInfo);
+                var operatorMatchInfo = SelectOperatorMatchInfo(matchedOperatorsInfos);
+                signatureLength = ProcessOperatorAndGetLength(chr, charIndex, operatorMatchInfo);
             }
             else
             {
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} неизвестная сигнатура");
             }
 
-            return processedLength;
+            return signatureLength;
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 }
                 else
                 {
-                    var signatureLength = ProcessOperatorOrFunction(chr, index);
+                    var signatureLength = ProcessOperatorOrFunctionAndGetLength(chr, index);
                     index += signatureLength;
                 }
             }
