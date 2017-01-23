@@ -14,5 +14,12 @@ namespace WorkFlowBilling.Compiler.Services
         /// <param name="infixString">Строка, содержащяя выражение в инфиксной форме</param>
         /// <returns></returns>
         string ConvertToPostfixString(string infixString);
+
+        /// <summary>
+        /// Оптимизировать строку, содержащую выражение в постфиксной форме 
+        /// </summary>
+        /// <param name="postfixString">Строка с выражением в постфиксной форме</param>
+        /// <returns></returns>
+        string OptimizePostfixString(string postfixString);
     }
 }

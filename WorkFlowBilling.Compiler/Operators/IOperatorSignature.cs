@@ -4,7 +4,7 @@ using WorkFlowBilling.IoC.Attributes;
 namespace WorkFlowBilling.Compiler.Operators
 {
     /// <summary>
-    /// Базовый интерфейс оператора
+    /// Базовый интерфейс сигнатуры оператора
     /// </summary>
     [AutoInjectable]
     public interface IOperatorSignature : ISignature

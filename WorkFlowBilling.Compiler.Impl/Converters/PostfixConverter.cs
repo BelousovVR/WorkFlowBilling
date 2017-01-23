@@ -13,6 +13,8 @@ using WorkFlowBilling.Compiler.Operators;
 using WorkFlowBilling.Compiler.Signatures;
 using static System.Char;
 using static WorkFlowBilling.Compiler.Impl.Converters.PostfixConverterProccessHelper;
+using static System.String;
+using WorkFlowBilling.Compiler.Variables;
 
 namespace WorkFlowBilling.Compiler.Impl.Converters
 {
@@ -198,6 +200,14 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} ожидается закрывающий символ переменной");
 
             var variableStr = _InputString.Substring(charIndex, variableEndIndex + 1);
+
+            var matchedVariableSignature = _Signatures.OfType<IVariableSignature>()
+                                                          .Select(_ => _.Match(variableStr))
+                                                          .Where(_ => _.IsMatched)
+                                                          .FirstOrDefault();
+
+            if (matchedVariableSignature == null)
+                throw new StringConvertationException($"В строке {_InputString} символ: {charIndex} неизвестная сигнатура переменной");
 
             AppendToOutput(variableStr);
 
@@ -495,11 +505,15 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
         /// Преобразовать строку, содержащюю выражение в инфиксной форме в постфиксную форму 
         /// </summary>
         /// <returns></returns>
-        public string Convert()
+        public string Convert(string infixString)
         {
+            if (IsNullOrWhiteSpace(infixString))
+                throw new ArgumentNullException("Пустая входная строка");
+
             _Stack = new Stack<PostfixConverterStackValue>();
             _StringBuilder = new StringBuilder();
             _LastProcessedType = ProcessedStringType.Unknown;
+            _InputString = infixString.Replace(" ", string.Empty);
 
             var index = 0;
             while (index < _InputString.Length)
@@ -531,7 +545,6 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
                 {
                     int numberStringLength = ProcessVariableAndGetLength(chr, index);
                     index += numberStringLength;
-                    
                 }
                 else
                 {
@@ -545,9 +558,14 @@ namespace WorkFlowBilling.Compiler.Impl.Converters
             return GetResult();
         }
 
-        public PostfixConverter(string inputString, string delitimer, IEnumerable<ISignature> signatures)
+        public PostfixConverter(string delitimer, IEnumerable<ISignature> signatures)
         {
-            _InputString = inputString.Replace(" ", string.Empty);
+            if (IsNullOrEmpty(delitimer))
+                throw new ArgumentNullException("Пустой разделитель");
+
+            if (signatures.IsNullOrEmpty())
+                throw new ArgumentNullException("Пустой список сигнатур");
+
             _Signatures = signatures;
             _Delitimer = delitimer;
         }

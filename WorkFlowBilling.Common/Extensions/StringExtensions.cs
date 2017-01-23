@@ -45,5 +45,17 @@ namespace WorkFlowBilling.Common.Extensions
                                     cultureInfo,
                                     out number);
         }
+
+        /// <summary>
+        /// Разбить строку на составляющие, используя разделители в виде строк
+        /// </summary>
+        /// <param name="str">Входная строка</param>
+        /// <param name="options">Опции разбиения</param>
+        /// <param name="delitimer">Разделители</param>
+        /// <returns></returns>
+        public static string[] Split(this string str, StringSplitOptions options, params string[] delitimer)
+        {
+            return str.Split(delitimer, options);
+        }
     }
 }

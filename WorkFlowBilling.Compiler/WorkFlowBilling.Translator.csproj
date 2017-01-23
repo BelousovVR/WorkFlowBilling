@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\StringConvertationException.cs" />
+    <Compile Include="Exceptions\StringOptimizationException.cs" />
+    <Compile Include="Executers\ITranslatorExecuter.cs" />
     <Compile Include="Functions\IFunctionSignature.cs" />
     <Compile Include="Operators\IOperatorSignature.cs" />
     <Compile Include="Operators\OperatorAssociativity.cs" />
@@ -50,8 +52,13 @@
     <Compile Include="Services\IWarsawNotationService.cs" />
     <Compile Include="Signatures\ISignature.cs" />
     <Compile Include="Signatures\SignatureMatchInfo.cs" />
+    <Compile Include="Variables\IVariableSignature.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WorkFlowBilling.Common\WorkFlowBilling.Common.csproj">
+      <Project>{E83346FB-C83E-46A4-BEC0-6061F812486C}</Project>
+      <Name>WorkFlowBilling.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WorkFlowBilling.IoC\WorkFlowBilling.IoC.csproj">
       <Project>{100e670f-eb86-4bd7-af10-fbfb5cc642b7}</Project>
       <Name>WorkFlowBilling.IoC</Name>

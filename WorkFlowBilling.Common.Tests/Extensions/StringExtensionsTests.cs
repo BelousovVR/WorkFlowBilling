@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using WorkFlowBilling.Common.Extensions;
 
 namespace WorkFlowBilling.Common.Tests.Extensions
@@ -42,6 +43,20 @@ namespace WorkFlowBilling.Common.Tests.Extensions
 
             //THEN
             Assert.AreEqual(awaitedDecimal, decimalValue);
+        }
+
+        [Test]
+        public void StringExtensions_Split()
+        {
+            //GIVEN
+            var inputString = "1 2 3 4";
+            var awaitedResult = new[] { "1", "2", "3", "4" };
+
+            //WHEN
+            var result = inputString.Split(StringSplitOptions.None, " ");
+
+            //THEN
+            Assert.AreEqual(awaitedResult, result);
         }
     }
 }
