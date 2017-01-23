@@ -41,7 +41,7 @@ namespace WorkFlowBilling.Common.Extensions
             var numberString = new string(numberCharsArray);
 
             return decimal.TryParse(numberString,
-                                    NumberStyles.AllowDecimalPoint,
+                                    NumberStyles.Number,
                                     cultureInfo,
                                     out number);
         }
